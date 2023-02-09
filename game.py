@@ -9,6 +9,10 @@ clock = pygame.time.Clock()
 while True:
     # Process player inputs.
     for event in pygame.event.get():
+        if (event.type == pygame.KEYUP
+            and event.key in (pygame.K_ESCAPE,
+                              pygame.K_q)):
+            event = pygame.event.Event(pygame.QUIT)
         if event.type == pygame.QUIT:
             pygame.quit()
             raise SystemExit
