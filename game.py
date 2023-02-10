@@ -2,7 +2,12 @@ import pygame
 
 pygame.init()
 
-screen = pygame.display.set_mode((1280,720))
+reference = pygame.image.load("reference.png")
+
+screen = pygame.display.set_mode(reference.get_size())
+
+reference.convert()  # Speed up Surface.blit
+reference.set_alpha(64)  # 25% opaque
 
 clock = pygame.time.Clock()
 
@@ -20,10 +25,9 @@ while True:
     # Do logical updates here.
     # ...
 
+    # Render the graphics.
     screen.fill("purple")  # Fill the display with a solid color
-
-    # Render the graphics here.
-    # ...
+    pygame.Surface.blit(screen, reference, (0, 0))
 
     pygame.display.flip()  # Refresh on-screen display
     clock.tick(60)         # wait until next frame (at 60 FPS)
