@@ -13,6 +13,20 @@ class Renderer:
             topleft=(int((self.surfsize[0] - boardsize) // 2) + 1,
                      int((self.surfsize[1] - boardsize) // 2) - 53))
 
+    def _init_choices(self):
+        xcen = int(self.surfsize[0] // 2)
+        xcen_pm = int(self.surfsize[0] * 5 // 16)
+        ycen = (self.board.rect.bottom
+                + int(self.surfsize[0] * 5 // 19))
+        cellsize = int(self.surfsize[0] // 18)
+
+        print("3 choices, x-centred at:")
+        print(f" x = {(xcen - xcen_pm, xcen, xcen + xcen_pm)}")
+        print(f" y = {ycen}")
+        print(f"with cellsize = {cellsize}")
+
+        raise SystemExit
+
     def render(self, surf):
         assert surf.get_size() == self.surfsize
         self.board.render(surf)
