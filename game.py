@@ -33,13 +33,24 @@ class MainBoardRenderer:
                                               % len(unfilled_colors)])
              for j in range(3)]
             for i in range(3)]
+        self.rect = self.grid[0][0].rect.union(
+            self.grid[2][2].rect)
+        self.rect.inflate_ip(4, 4)
+
+    @property
+    def dark_color(self):
+        return self.grid[0][0].dark_color
 
     def render(self, surf):
+        pygame.draw.rect(surf, self.dark_color, self.rect, 2)
         for row in self.grid:
             for sbr in row:
                 sbr.render(surf)
 
 class SubBoardRenderer:
+    dark_color = pygame.Color("#585f72")
+    light_color = pygame.Color("#cdd6e5")
+
     def __init__(self, cellsize, topleft, unfilled_color):
         x0, y0 = topleft
         self.grid = [
@@ -49,11 +60,20 @@ class SubBoardRenderer:
                           unfilled_color)
              for j in range(3)]
             for i in range(3)]
+        self.inner_rect = self.grid[0][0].rect.union(
+            self.grid[2][2].rect)
+        self.outer_rect = self.inner_rect.inflate(2, 2)
+
+    @property
+    def rect(self):
+        return self.outer_rect
 
     def render(self, surf):
+        pygame.draw.rect(surf, self.light_color, self.inner_rect)
         for row in self.grid:
             for cell in row:
                 cell.render(surf)
+        pygame.draw.rect(surf, self.dark_color, self.outer_rect, 2)
 
 class CellRenderer:
     def __init__(self, cellsize, topleft, unfilled_color):
