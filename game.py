@@ -1,5 +1,4 @@
 import pygame
-import random
 
 class Renderer:
     def __init__(self, surfsize):
@@ -21,10 +20,17 @@ class Renderer:
 class MainBoardRenderer:
     def __init__(self, cellsize, topleft):
         x0, y0 = topleft
+        unfilled_colors = (
+            pygame.Color("white"),
+            pygame.Color("#e4e9ef"),
+        )
+        count = 0
         self.grid = [
             [SubBoardRenderer(cellsize,
                               (x0 + j * cellsize * 3,
-                               y0 + i * cellsize * 3))
+                               y0 + i * cellsize * 3),
+                              unfilled_colors[(count := count + 1)
+                                              % len(unfilled_colors)])
              for j in range(3)]
             for i in range(3)]
 
@@ -34,12 +40,13 @@ class MainBoardRenderer:
                 sbr.render(surf)
 
 class SubBoardRenderer:
-    def __init__(self, cellsize, topleft):
+    def __init__(self, cellsize, topleft, unfilled_color):
         x0, y0 = topleft
         self.grid = [
             [CellRenderer(cellsize,
                           (x0 + j * cellsize,
-                           y0 + i * cellsize))
+                           y0 + i * cellsize),
+                          unfilled_color)
              for j in range(3)]
             for i in range(3)]
 
@@ -49,17 +56,13 @@ class SubBoardRenderer:
                 cell.render(surf)
 
 class CellRenderer:
-    def __init__(self, cellsize, topleft):
+    def __init__(self, cellsize, topleft, unfilled_color):
         self.rect = pygame.Rect(topleft, (cellsize, cellsize))
         self.rect.inflate_ip(-2, -2)
-        self.color = pygame.Color(
-            random.randrange(256),
-            random.randrange(256),
-            random.randrange(256),
-        )
+        self.unfilled_color = unfilled_color
 
     def render(self, surf):
-        pygame.draw.rect(surf, self.color, self.rect)
+        pygame.draw.rect(surf, self.unfilled_color, self.rect)
 
 pygame.init()
 
