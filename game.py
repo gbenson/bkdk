@@ -41,11 +41,22 @@ class MainBoardRenderer:
     def dark_color(self):
         return self.grid[0][0].dark_color
 
+    @property
+    def cells(self):
+        for row in self.grid:
+            for subrow in range(3):
+                for sbr in row:
+                    for cell in sbr.grid[subrow]:
+                        yield cell
+
     def render(self, surf):
         pygame.draw.rect(surf, self.dark_color, self.rect, 2)
         for row in self.grid:
             for sbr in row:
                 sbr.render(surf)
+        for index, cell in enumerate(self.cells):
+            if index & 1:
+                cell.render(surf, True)
 
 class SubBoardRenderer:
     dark_color = pygame.Color("#585f72")
@@ -76,13 +87,29 @@ class SubBoardRenderer:
         pygame.draw.rect(surf, self.dark_color, self.outer_rect, 2)
 
 class CellRenderer:
-    def __init__(self, cellsize, topleft, unfilled_color):
-        self.rect = pygame.Rect(topleft, (cellsize, cellsize))
-        self.rect.inflate_ip(-2, -2)
-        self.unfilled_color = unfilled_color
+    border_color = pygame.Color("#01152e")
+    lo_fill_color = pygame.Color("#3164d1")
+    hi_fill_color = pygame.Color("#5391de")
 
-    def render(self, surf):
-        pygame.draw.rect(surf, self.unfilled_color, self.rect)
+    def __init__(self, cellsize, topleft, unfilled_color):
+        rect = pygame.Rect(topleft, (cellsize, cellsize))
+        self.unfilled_rect = rect.inflate(-2, -2)
+        self.unfilled_color = unfilled_color
+        self.border_rect = rect.inflate(2, 2)
+        self.hi_fill_rect = self.border_rect.inflate(-4, -4)
+        self.lo_fill_rect = self.hi_fill_rect.inflate(-4, -4)
+
+    @property
+    def rect(self):
+        return self.unfilled_rect
+
+    def render(self, surf, filled=False):
+        if filled:
+            pygame.draw.rect(surf, self.border_color, self.border_rect)
+            pygame.draw.rect(surf, self.hi_fill_color, self.hi_fill_rect)
+            pygame.draw.rect(surf, self.lo_fill_color, self.lo_fill_rect)
+        else:
+            pygame.draw.rect(surf, self.unfilled_color, self.unfilled_rect)
 
 pygame.init()
 
