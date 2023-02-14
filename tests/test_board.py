@@ -1,5 +1,5 @@
 import pytest
-from bkdk.board import Board
+from bkdk import Board
 
 def test_boards_have_81_cells():
     """Boards have 81 cells."""
