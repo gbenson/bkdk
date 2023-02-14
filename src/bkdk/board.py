@@ -24,6 +24,9 @@ class Grouping(tuple):
         for cell in self:
             cell.clear()
 
+    def __str__(self):
+        return "".join(".#"[cell.is_set] for cell in self)
+
 class Board:
     def __init__(self):
         self.rows = tuple(Grouping(Cell((row_index, column_index))
@@ -40,3 +43,17 @@ class Board:
             box_index = (row_index // 3) * 3 + column_index // 3
             boxes[box_index].append(cell)
         return tuple(Grouping(box) for box in boxes)
+
+    def __str__(self):
+        prefix = f"{self.__class__.__name__}["
+        sep = f"\n{' ' * len(prefix)}"
+        return f"{prefix}{sep.join(str(row) for row in self.rows)}]"
+
+    def place(self, rowcol, shape):
+        """Place a shape on the board, such that the top left corner of
+        the shape is located at rowcol."""
+        row_index, column_index = rowcol
+        for srcrow, dstrow in zip(shape.rows, self.rows[row_index:]):
+            for srccell, dstcell in zip(srcrow, dstrow[column_index:]):
+                if srccell:
+                    dstcell.set()
