@@ -40,3 +40,37 @@ def test_boards_start_blank():
     """Boards are created blank."""
     for cell in Board().cells:
         assert not cell.is_set
+
+def test_grouping_starts_incomplete():
+    """Groupings are initially incomplete."""
+    assert not Board().rows[7].is_complete
+
+def test_part_set_grouping_not_completes():
+    """Partially set groupings are not complete."""
+    group = Board().rows[7]
+    group[4].set()
+    assert not group.is_complete
+
+def test_grouping_completes():
+    """Groupings complete when all cells are set."""
+    group = Board().rows[7]
+    for cell in group:
+        cell.set()
+    assert group.is_complete
+
+def test_grouping_clear_clears_all_cells():
+    """Grouping.clear clears all the cells in a group."""
+    group = Board().rows[7]
+    for cell in group:
+        cell.set()
+    group.clear()
+    for cell in group:
+        assert not cell.is_set
+
+def test_cleared_grouping_becomes_incomplete():
+    """Groupings become incomplete when cleared."""
+    group = Board().rows[7]
+    for cell in group:
+        cell.set()
+    group.clear()
+    assert not group.is_complete

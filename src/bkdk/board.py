@@ -8,15 +8,28 @@ class Cell:
     def set(self):
         self.is_set = True
 
+    def clear(self):
+        self.is_set = False
+
     def __str__(self):
         return f"Cell({self.rowcol}, is_set={self.is_set})"
 
+class Grouping(tuple):
+    """One row, column, or box."""
+    @property
+    def is_complete(self):
+        return all(cell.is_set for cell in self)
+
+    def clear(self):
+        for cell in self:
+            cell.clear()
+
 class Board:
     def __init__(self):
-        self.rows = tuple(tuple(Cell((row_index, column_index))
+        self.rows = tuple(Grouping(Cell((row_index, column_index))
                                 for column_index in range(9))
                           for row_index in range(9))
-        self.columns = tuple(zip(*self.rows))
+        self.columns = tuple(map(Grouping, zip(*self.rows)))
         self.cells = sum(self.rows, start=())
         self.boxes = self._init_boxes()
 
@@ -26,4 +39,4 @@ class Board:
             row_index, column_index = cell.rowcol
             box_index = (row_index // 3) * 3 + column_index // 3
             boxes[box_index].append(cell)
-        return tuple(tuple(box) for box in boxes)
+        return tuple(Grouping(box) for box in boxes)
