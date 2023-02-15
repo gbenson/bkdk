@@ -129,7 +129,7 @@ def test_shape_placement(shape_sequence, sequence_length):
     """Shapes can be placed onto the board."""
     board = Board()
     for rowcol, shape, expect_board in shape_sequence[:sequence_length]:
-        board.place(rowcol, shape)
+        board.place_at(rowcol, shape)
         assert str(board) == expect_board
 
 def test_shapes_complete_groups(shape_sequence):
@@ -138,7 +138,7 @@ def test_shapes_complete_groups(shape_sequence):
     testrow = board.rows[5]
     for rowcol, shape, expect_board in shape_sequence:
         assert not testrow.is_complete
-        board.place(rowcol, shape)
+        board.place_at(rowcol, shape)
     assert testrow.is_complete
 
 def test_allowed_shape_placement():
@@ -147,9 +147,9 @@ def test_allowed_shape_placement():
     shape1 = Shape(code="x-x_-x-_x-x")
     shape2 = Shape(code="-x-_x-x_-x-")
     rowcol = (5, 5)
-    assert board.can_place(rowcol, shape1)
-    board.place(rowcol, shape1)
-    assert board.can_place(rowcol, shape2)
+    assert board.can_place_at(rowcol, shape1)
+    board.place_at(rowcol, shape1)
+    assert board.can_place_at(rowcol, shape2)
 
 def test_rejected_shape_placement():
     """Shapes that intersect may not be placed on the board."""
@@ -157,10 +157,10 @@ def test_rejected_shape_placement():
     shape1 = Shape(code="x-x_-x-_x-x")
     shape2 = Shape(code="-x-_x-x_-x-")
     rowcol = (5, 5)
-    assert board.can_place(rowcol, shape1)
-    board.place(rowcol, shape1)
+    assert board.can_place_at(rowcol, shape1)
+    board.place_at(rowcol, shape1)
     rowcol2 = tuple(a-b for b, a in enumerate(rowcol))
-    assert not board.can_place(rowcol2, shape2)
+    assert not board.can_place_at(rowcol2, shape2)
 
 @pytest.mark.parametrize(
     "rowcol, shape, is_allowed",
@@ -179,4 +179,4 @@ def test_rejected_shape_placement():
     ))
 def test_shape_placement_clamping(rowcol, shape, is_allowed):
     """Check shapes may not be placed outside the board."""
-    assert Board().can_place(rowcol, Shape(code=shape)) == is_allowed
+    assert Board().can_place_at(rowcol, Shape(code=shape)) == is_allowed
