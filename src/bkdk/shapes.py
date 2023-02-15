@@ -44,6 +44,7 @@ class Shape:
         return Shape("_".join("".join(reversed(x))
                               for x in zip(*self.code.split("_"))))
 
+
 class ShapeSetBuilder:
     def __init__(self):
         self._shapes = {}
@@ -84,6 +85,7 @@ class ShapeSetBuilder:
         code = shape.code
         if code not in self._shapes:
             self._shapes[code] = shape
+
 
 shapes = tuple(ShapeSetBuilder()._shapes.values())
 

@@ -1,6 +1,7 @@
 import pytest
 from bkdk import Board, Shape
 
+
 def test_boards_have_81_cells():
     """Boards have 81 cells."""
     assert len(Board().cells) == 81
@@ -9,16 +10,19 @@ def test_boards_have_81_cells():
 # Three different ways cells are grouped together.
 CELL_GROUPINGS = ("rows", "columns", "boxes")
 
+
 @pytest.mark.parametrize("grouping", CELL_GROUPINGS)
 def test_boards_have_9(grouping):
     """Boards have 9 rows, columns and boxes."""
     assert len(getattr(Board(), grouping)) == 9
 
+
 @pytest.mark.parametrize("grouping", CELL_GROUPINGS)
 def test_grouping_has_9_cells(grouping):
     """Rows, columns and boxes each have 9 cells."""
     for group in getattr(Board(), grouping):
-        assert len(group) is 9
+        assert len(group) == 9
+
 
 @pytest.mark.parametrize(
     "grouping, a, b",
@@ -41,9 +45,11 @@ def test_boards_start_blank():
     for cell in Board().cells:
         assert not cell.is_set
 
+
 def test_grouping_starts_incomplete():
     """Groupings are initially incomplete."""
     assert not Board().rows[7].is_complete
+
 
 def test_part_set_grouping_not_completes():
     """Partially set groupings are not complete."""
@@ -51,12 +57,14 @@ def test_part_set_grouping_not_completes():
     group[4].set()
     assert not group.is_complete
 
+
 def test_grouping_completes():
     """Groupings complete when all cells are set."""
     group = Board().rows[7]
     for cell in group:
         cell.set()
     assert group.is_complete
+
 
 def test_grouping_clear_clears_all_cells():
     """Grouping.clear clears all the cells in a group."""
@@ -67,6 +75,7 @@ def test_grouping_clear_clears_all_cells():
     for cell in group:
         assert not cell.is_set
 
+
 def test_cleared_grouping_becomes_incomplete():
     """Groupings become incomplete when cleared."""
     group = Board().rows[7]
@@ -74,6 +83,7 @@ def test_cleared_grouping_becomes_incomplete():
         cell.set()
     group.clear()
     assert not group.is_complete
+
 
 @pytest.fixture
 def shape_sequence():
@@ -124,6 +134,7 @@ Board[.........
          ),
         )
 
+
 @pytest.mark.parametrize("sequence_length", (1, 2, 3, 4))
 def test_shape_placement(shape_sequence, sequence_length):
     """Shapes can be placed onto the board."""
@@ -131,6 +142,7 @@ def test_shape_placement(shape_sequence, sequence_length):
     for rowcol, shape, expect_board in shape_sequence[:sequence_length]:
         board.place_at(rowcol, shape)
         assert str(board) == expect_board
+
 
 def test_shapes_complete_groups(shape_sequence):
     """Placing shapes causes groupings to complete."""
@@ -140,6 +152,7 @@ def test_shapes_complete_groups(shape_sequence):
         assert not testrow.is_complete
         board.place_at(rowcol, shape)
     assert testrow.is_complete
+
 
 def test_allowed_shape_placement():
     """Shapes that don't intersect may be placed on the board."""
@@ -151,6 +164,7 @@ def test_allowed_shape_placement():
     board.place_at(rowcol, shape1)
     assert board.can_place_at(rowcol, shape2)
 
+
 def test_rejected_shape_placement():
     """Shapes that intersect may not be placed on the board."""
     board = Board()
@@ -161,6 +175,7 @@ def test_rejected_shape_placement():
     board.place_at(rowcol, shape1)
     rowcol2 = tuple(a-b for b, a in enumerate(rowcol))
     assert not board.can_place_at(rowcol2, shape2)
+
 
 @pytest.mark.parametrize(
     "rowcol, shape, is_allowed",
@@ -176,14 +191,16 @@ def test_rejected_shape_placement():
      ((8, 3), "xx", True),
      ((8, 3), "x_x", False),
      ((9, 3), "x", False),
-    ))
+     ))
 def test_shape_placement_clamping(rowcol, shape, is_allowed):
     """Check shapes may not be placed outside the board."""
     assert Board().can_place_at(rowcol, Shape(code=shape)) == is_allowed
 
+
 def test_any_placement_allowed():
     """Check a shape may be placed somewhere."""
     assert Board().can_place(Shape(code="x_x_x_x_x"))
+
 
 def test_all_placement_denied():
     """Check a shape may be placed somewhere."""

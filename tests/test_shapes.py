@@ -1,6 +1,7 @@
 import pytest
 from bkdk import Shape
 
+
 @pytest.mark.parametrize(
     "input_code, expected_code",
     (("x", "x"),

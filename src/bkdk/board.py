@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class Cell:
     rowcol: tuple[int, int]
@@ -14,6 +15,7 @@ class Cell:
     def __str__(self):
         return f"Cell({self.rowcol}, is_set={self.is_set})"
 
+
 class Grouping(tuple):
     """One row, column, or box."""
     @property
@@ -27,10 +29,11 @@ class Grouping(tuple):
     def __str__(self):
         return "".join(".#"[cell.is_set] for cell in self)
 
+
 class Board:
     def __init__(self):
         self.rows = tuple(Grouping(Cell((row_index, column_index))
-                                for column_index in range(9))
+                                   for column_index in range(9))
                           for row_index in range(9))
         self.columns = tuple(map(Grouping, zip(*self.rows)))
         self.cells = sum(self.rows, start=())
