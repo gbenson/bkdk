@@ -49,11 +49,17 @@ class Board:
         sep = f"\n{' ' * len(prefix)}"
         return f"{prefix}{sep.join(str(row) for row in self.rows)}]"
 
-    def place(self, rowcol, shape):
-        """Place a shape on the board, such that the top left corner of
-        the shape is located at rowcol."""
+    def _cells_beneath(self, rowcol, shape):
+        """Return a generator that yields the board cells that would
+        become set were shape to be placed at rowcol."""
         row_index, column_index = rowcol
         for srcrow, dstrow in zip(shape.rows, self.rows[row_index:]):
             for srccell, dstcell in zip(srcrow, dstrow[column_index:]):
                 if srccell:
-                    dstcell.set()
+                    yield dstcell
+
+    def place(self, rowcol, shape):
+        """Place shape on the board, such that the top left corner of
+        the shape is located at rowcol."""
+        for cell in self._cells_beneath(rowcol, shape):
+            cell.set()
