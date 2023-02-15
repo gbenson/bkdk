@@ -140,3 +140,43 @@ def test_shapes_complete_groups(shape_sequence):
         assert not testrow.is_complete
         board.place(rowcol, shape)
     assert testrow.is_complete
+
+def test_allowed_shape_placement():
+    """Shapes that don't intersect may be placed on the board."""
+    board = Board()
+    shape1 = Shape(code="x-x_-x-_x-x")
+    shape2 = Shape(code="-x-_x-x_-x-")
+    rowcol = (5, 5)
+    assert board.can_place(rowcol, shape1)
+    board.place(rowcol, shape1)
+    assert board.can_place(rowcol, shape2)
+
+def test_rejected_shape_placement():
+    """Shapes that intersect may not be placed on the board."""
+    board = Board()
+    shape1 = Shape(code="x-x_-x-_x-x")
+    shape2 = Shape(code="-x-_x-x_-x-")
+    rowcol = (5, 5)
+    assert board.can_place(rowcol, shape1)
+    board.place(rowcol, shape1)
+    rowcol2 = tuple(a-b for b, a in enumerate(rowcol))
+    assert not board.can_place(rowcol2, shape2)
+
+@pytest.mark.parametrize(
+    "rowcol, shape, is_allowed",
+    (((0, -1), "x", False),
+     ((0, 0), "x", True),
+     ((0, 8), "x", True),
+     ((0, 8), "x_x", True),
+     ((0, 8), "xx", False),
+     ((0, 9), "x", False),
+     ((-1, 3), "x", False),
+     ((0, 3), "x", True),
+     ((8, 3), "x", True),
+     ((8, 3), "xx", True),
+     ((8, 3), "x_x", False),
+     ((9, 3), "x", False),
+    ))
+def test_shape_placement_clamping(rowcol, shape, is_allowed):
+    """Check shapes may not be placed outside the board."""
+    assert Board().can_place(rowcol, Shape(code=shape)) == is_allowed

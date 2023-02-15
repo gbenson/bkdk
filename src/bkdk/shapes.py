@@ -19,6 +19,18 @@ class Shape:
         return (f'<{__name__}.{self.__class__.__name__}'
                 f' code="{self.code}">')
 
+    @property
+    def num_rows(self):
+        return len(self.rows)
+
+    @property
+    def num_columns(self):
+        return len(self.rows[0])
+
+    @property
+    def size(self):
+        return self.num_rows, self.num_columns
+
     def as_asciiart(self):
         return "\n".join("".join((" #")[c]
                                  for c in row)

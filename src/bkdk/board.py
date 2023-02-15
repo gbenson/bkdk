@@ -58,6 +58,20 @@ class Board:
                 if srccell:
                     yield dstcell
 
+    def can_place(self, rowcol, shape):
+        """Return True if shape may be placed on the board with its
+        top-left corner at rowcol, False otherwise."""
+        if any(d < 0 for d in rowcol):
+            return False
+        print(f"{shape.code} at {rowcol}: "
+              f"shape.size = {shape.size}: ",
+              tuple(d + s
+                    for d, s in zip(rowcol, shape.size)))
+        if any(d + s > 9 for d, s in zip(rowcol, shape.size)):
+            return False
+        return not any(cell.is_set
+                       for cell in self._cells_beneath(rowcol, shape))
+
     def place(self, rowcol, shape):
         """Place shape on the board, such that the top left corner of
         the shape is located at rowcol."""
