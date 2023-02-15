@@ -72,6 +72,14 @@ class Board:
         return not any(cell.is_set
                        for cell in self._cells_beneath(rowcol, shape))
 
+    def can_place(self, shape):
+        """Return True if shape may be placed somewhere on the board,
+        False otherwise."""
+        if any(self.can_place_at(cell.rowcol, shape)
+               for cell in self.cells):
+            return True
+        return False
+
     def place_at(self, rowcol, shape):
         """Place shape on the board, such that the top left corner of
         the shape is located at rowcol."""

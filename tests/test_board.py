@@ -180,3 +180,14 @@ def test_rejected_shape_placement():
 def test_shape_placement_clamping(rowcol, shape, is_allowed):
     """Check shapes may not be placed outside the board."""
     assert Board().can_place_at(rowcol, Shape(code=shape)) == is_allowed
+
+def test_any_placement_allowed():
+    """Check a shape may be placed somewhere."""
+    assert Board().can_place(Shape(code="x_x_x_x_x"))
+
+def test_all_placement_denied():
+    """Check a shape may be placed somewhere."""
+    board = Board()
+    board.place_at((4, 0), Shape(code="xxxx"))
+    board.place_at((4, 4), Shape(code="xxxxx"))
+    assert not board.can_place(Shape(code="x_x_x_x_x"))
