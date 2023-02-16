@@ -1,4 +1,5 @@
 import pytest
+import random
 from bkdk import Board, Shape
 
 
@@ -208,3 +209,13 @@ def test_all_placement_denied():
     board.place_at((4, 0), Shape(code="xxxx"))
     board.place_at((4, 4), Shape(code="xxxxx"))
     assert not board.can_place(Shape(code="x_x_x_x_x"))
+
+
+def test_initial_choices():
+    """Boards start with three initial choices of shape."""
+    random.seed(23)
+    board = Board()
+    assert len(board.choices) == 3
+    assert board.choices[0].code == "xx_x-_x-"
+    assert board.choices[1].code == "xxxx"
+    assert board.choices[2].code == "xx"

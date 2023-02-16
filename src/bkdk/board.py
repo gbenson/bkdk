@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from .shapes import random_shape
 
 
 @dataclass
@@ -38,6 +39,7 @@ class Board:
         self.columns = tuple(map(Grouping, zip(*self.rows)))
         self.cells = sum(self.rows, start=())
         self.boxes = self._init_boxes()
+        self._new_choices()
 
     def _init_boxes(self):
         boxes = [[] for _ in range(9)]
@@ -46,6 +48,9 @@ class Board:
             box_index = (row_index // 3) * 3 + column_index // 3
             boxes[box_index].append(cell)
         return tuple(Grouping(box) for box in boxes)
+
+    def _new_choices(self):
+        self.choices = [random_shape() for _ in range(3)]
 
     def __str__(self):
         prefix = f"{self.__class__.__name__}["
