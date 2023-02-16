@@ -4,6 +4,7 @@ class Renderer:
     def __init__(self, surfsize):
         self.surfsize = surfsize
         self._init_board()
+        self._init_choices()
 
     def _init_board(self):
         cellsize = int(min(self.surfsize) * 2 // 19)
@@ -19,17 +20,17 @@ class Renderer:
         ycen = (self.board.rect.bottom
                 + int(self.surfsize[0] * 5 // 19))
         cellsize = int(self.surfsize[0] // 18)
-
-        print("3 choices, x-centred at:")
-        print(f" x = {(xcen - xcen_pm, xcen, xcen + xcen_pm)}")
-        print(f" y = {ycen}")
-        print(f"with cellsize = {cellsize}")
-
-        raise SystemExit
+        self.choices = tuple(
+            ChoiceRenderer(
+                cellsize=cellsize,
+                center=((xcen + xcen_pm * (i - 1), ycen)))
+            for i in range(3))
 
     def render(self, surf):
         assert surf.get_size() == self.surfsize
         self.board.render(surf)
+        for choice in self.choices:
+            choice.render(surf)
 
 class MainBoardRenderer:
     def __init__(self, cellsize, topleft):
@@ -100,6 +101,21 @@ class SubBoardRenderer:
                 cell.render(surf)
         pygame.draw.rect(surf, self.dark_color, self.outer_rect, 2)
 
+class ChoiceRenderer:
+    unfilled_color = pygame.Color("white")
+
+    def __init__(self, cellsize, center):
+        self.cellsize = cellsize
+        rectsize = self.cellsize * 5
+        halfsize = int(rectsize // 2)
+        xc, yc = center
+        print(f"choice: {cellsize}, {center}")
+        self.rect = pygame.Rect((xc - halfsize, yc - halfsize),
+                                (rectsize, rectsize))
+
+    def render(self, surf):
+        pygame.draw.rect(surf, self.unfilled_color, self.rect)
+
 class CellRenderer:
     border_color = pygame.Color("#01152e")
     lo_fill_color = pygame.Color("#3164d1")
@@ -156,6 +172,7 @@ while True:
     screen.fill("purple")  # Fill the display with a solid color
     pygame.Surface.blit(screen, reference, (0, 0))
     renderer.render(screen)
+    pygame.Surface.blit(screen, reference, (0, 0))
 
     pygame.display.flip()  # Refresh on-screen display
     clock.tick(60)         # wait until next frame (at 60 FPS)
