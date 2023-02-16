@@ -1,3 +1,6 @@
+import random
+
+
 class Shape:
     def __init__(self, code=None):
         if code is not None:
@@ -88,6 +91,11 @@ class ShapeSetBuilder:
 
 
 ALL_SHAPES = tuple(ShapeSetBuilder()._shapes.values())
+
+
+def random_shape():
+    return random.choice(ALL_SHAPES)
+
 
 if __name__ == "__main__":
     for shape in ALL_SHAPES:
