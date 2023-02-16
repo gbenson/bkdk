@@ -1,6 +1,7 @@
 import pytest
 import random
-from bkdk import Board, Shape
+from bkdk import Board
+from bkdk.shapes import Shape
 
 
 def test_boards_have_81_cells():

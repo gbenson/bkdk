@@ -1,6 +1,6 @@
 import pytest
 import random
-from bkdk import Shape, ALL_SHAPES, random_shape
+from bkdk.shapes import Shape, ALL_SHAPES, random_shape
 
 
 @pytest.mark.parametrize(
