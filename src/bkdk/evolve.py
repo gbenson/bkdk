@@ -1,21 +1,20 @@
-"""
-2-input XOR example -- this is most likely the simplest possible example.
-"""
-
 import neat
-
-# 2-input XOR inputs and expected outputs.
-xor_inputs = [(0.0, 0.0), (0.0, 1.0), (1.0, 0.0), (1.0, 1.0)]
-xor_outputs = [(0.0,), (1.0,), (1.0,), (0.0,)]
+from .board import Board
+from .player import Player
 
 
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
-        genome.fitness = 4.0
         net = neat.nn.FeedForwardNetwork.create(genome, config)
-        for xi, xo in zip(xor_inputs, xor_outputs):
-            output = net.activate(xi)
-            genome.fitness -= (output[0] - xo[0]) ** 2
+        genome.fitness = 0
+        for _ in range(5):
+            genome.fitness += eval_network(net)
+
+
+def eval_network(net):
+    board = Board()
+    player = Player(net.activate)
+    player.one_move(board)
 
 
 # Load configuration.
@@ -38,7 +37,7 @@ print('\nBest genome:\n{!s}'.format(winner))
 # Show output of the most fit genome against training data.
 print('\nOutput:')
 winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
-for xi, xo in zip(xor_inputs, xor_outputs):
+for xi, xo in zip(xor_inputs, xor_outputs):  # noqa: F821
     output = winner_net.activate(xi)
     print("  input {!r}, expected output {!r}, got {!r}".format(
         xi, xo, output))
