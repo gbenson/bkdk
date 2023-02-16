@@ -87,11 +87,11 @@ class ShapeSetBuilder:
             self._shapes[code] = shape
 
 
-shapes = tuple(ShapeSetBuilder()._shapes.values())
+ALL_SHAPES = tuple(ShapeSetBuilder()._shapes.values())
 
 if __name__ == "__main__":
-    for shape in shapes:
+    for shape in ALL_SHAPES:
         print(f"{shape}:")
         print(shape.as_asciiart())
         print()
-    print(f"{len(shapes)} shapes total")
+    print(f"{len(ALL_SHAPES)} shapes total")
