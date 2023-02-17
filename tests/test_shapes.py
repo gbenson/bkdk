@@ -28,3 +28,54 @@ def test_random_shape():
     assert random_shape().code == "xxxx"
     assert random_shape().code == "xx"
     assert random_shape().code == "xxx_--x_--x"
+
+
+def test_finalized_size():
+    """Shapes finalize to 5*5 = 25 cells."""
+    assert len(ALL_SHAPES[0].cells) == 25
+
+
+@pytest.mark.parametrize(
+    "input_code, padded_code",
+    (("x",
+      "".join(("-----",
+               "-----",
+               "--x--",
+               "-----",
+               "-----"))),
+     ("xx",
+      "".join(("-----",
+               "-----",
+               "-xx--",
+               "-----",
+               "-----"))),
+     ("xxx",
+      "".join(("-----",
+               "-----",
+               "-xxx-",
+               "-----",
+               "-----"))),
+     ("x_x",
+      "".join(("-----",
+               "--x--",
+               "--x--",
+               "-----",
+               "-----"))),
+     ("x_x_x",
+      "".join(("-----",
+               "--x--",
+               "--x--",
+               "--x--",
+               "-----"))),
+     ("xx_xx",
+      "".join(("-----",
+               "-xx--",
+               "-xx--",
+               "-----",
+               "-----"))),
+     ))
+def test_finalized_padding(input_code, padded_code):
+    """Shapes are centred or left/up of centre"""
+    shape = Shape(code=input_code)
+    shape._init_cells((5, 5))
+    assert "".join(("-x")[v] for v in shape.cells) == padded_code

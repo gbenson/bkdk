@@ -47,6 +47,28 @@ class Shape:
         return Shape("_".join("".join(reversed(x))
                               for x in zip(*self.code.split("_"))))
 
+    def _init_cells(self, max_size):
+        max_rows, max_columns = max_size
+        self.cells = sum(
+            self._pad_rows(
+                (self._pad_row(row, max_columns)
+                 for row in self.rows),
+                max_rows),
+            start=())
+
+    def _pad_rows(self, rows, max_rows):
+        rows = list(rows)
+        return self._pad_seq(rows, max_rows, tuple(0 for _ in rows[0]))
+
+    def _pad_row(self, cells, max_cells):
+        return self._pad_seq(cells, max_cells, 0)
+
+    def _pad_seq(self, items, to_length, pad_with):
+        items = list(items)
+        items[:0] = [pad_with] * ((to_length - len(items)) // 2)
+        items.extend([pad_with] * (to_length - len(items)))
+        return tuple(items)
+
 
 class ShapeSetBuilder:
     def __init__(self):
@@ -93,8 +115,28 @@ class ShapeSetBuilder:
     def shapes(self):
         return self._shapes.values()
 
+    @property
+    def max_rows(self):
+        return max(shape.num_rows for shape in self.shapes)
 
-ALL_SHAPES = tuple(ShapeSetBuilder().shapes)
+    @property
+    def max_columns(self):
+        return max(shape.num_columns for shape in self.shapes)
+
+    @property
+    def max_size(self):
+        return self.max_rows, self.max_columns
+
+    def finalize(self):
+        shapes = self.shapes
+        max_size = self.max_size
+        self._shapes = None
+        for shape in shapes:
+            shape._init_cells(max_size)
+        return shapes
+
+
+ALL_SHAPES = tuple(ShapeSetBuilder().finalize())
 
 
 def random_shape():
