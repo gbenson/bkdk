@@ -1,5 +1,6 @@
 import neat
 import pickle
+from . import visualize
 from .board import Board
 from .player import Player
 
@@ -34,7 +35,10 @@ config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
 p = neat.Population(config)
 
 # Add a stdout reporter to show progress in the terminal.
-p.add_reporter(neat.StdOutReporter(False))
+p.add_reporter(neat.StdOutReporter(True))
+stats = neat.StatisticsReporter()
+p.add_reporter(stats)
+p.add_reporter(neat.Checkpointer(1))
 
 # Run until a solution is found.
 winner = p.run(eval_genomes)
@@ -54,3 +58,6 @@ if False:
 else:
     fitness = eval_network(winner_net, verbose=True, penalty_weight=0)
     print(f"average score: {fitness}")
+
+    visualize.plot_stats(stats, ylog=False, view=True)
+    visualize.plot_species(stats, view=True)
