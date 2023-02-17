@@ -89,8 +89,12 @@ class ShapeSetBuilder:
         if code not in self._shapes:
             self._shapes[code] = shape
 
+    @property
+    def shapes(self):
+        return self._shapes.values()
 
-ALL_SHAPES = tuple(ShapeSetBuilder()._shapes.values())
+
+ALL_SHAPES = tuple(ShapeSetBuilder().shapes)
 
 
 def random_shape():
