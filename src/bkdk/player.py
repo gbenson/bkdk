@@ -71,7 +71,8 @@ class Player:
             shape = board.choices[choice]
             board.place_at(rowcol, shape)
             board.choices[choice] = None
-            # XXX refill
+            if all(c is None for c in board.choices):
+                board._new_choices()
             print(board)
             last_score = score
             score += shape.score
