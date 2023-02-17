@@ -12,9 +12,10 @@ def eval_genomes(genomes, config):
 
 
 def eval_network(net):
-    board = Board()
     player = Player(net.activate)
-    player.one_move(board)
+    # XXX run multiple games?
+    board = Board()
+    score, penalty = player.run_game(board)
 
 
 # Load configuration.

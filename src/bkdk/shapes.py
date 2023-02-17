@@ -55,6 +55,7 @@ class Shape:
                  for row in self.rows),
                 max_rows),
             start=())
+        self.score = sum(self.cells)
 
     def _pad_rows(self, rows, max_rows):
         rows = list(rows)
