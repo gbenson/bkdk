@@ -73,9 +73,9 @@ class Player:
             board.choices[choice] = None
             if all(c is None for c in board.choices):
                 board._new_choices()
-            print(board)
             last_score = score
             score += shape.score
-            # score += board.resolve()
+            score += len(board.resolve()) * 9
+            print(board)
             print(f"score {last_score} => {score}")
         return score, penalties

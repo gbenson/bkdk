@@ -89,3 +89,19 @@ class Board:
         the shape is located at rowcol."""
         for cell in self._cells_beneath(rowcol, shape):
             cell.set()
+
+    def resolve(self):
+        """Resolve any solved sections, returning the number of
+        sections cleared."""
+        completed = sum(
+            ([grouping
+              for grouping in groupings
+              if grouping.is_complete]
+             for groupings in (self.rows, self.columns, self.boxes)),
+            start=[])
+        if completed:
+            print(self)
+        for grouping in completed:
+            print("BANG!")
+            grouping.clear()
+        return completed
