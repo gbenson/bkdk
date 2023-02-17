@@ -47,7 +47,7 @@ class Shape:
         return Shape("_".join("".join(reversed(x))
                               for x in zip(*self.code.split("_"))))
 
-    def _init_cells(self, max_size):
+    def _finalize(self, max_size):
         max_rows, max_columns = max_size
         self.cells = sum(
             self._pad_rows(
@@ -132,7 +132,7 @@ class ShapeSetBuilder:
         max_size = self.max_size
         self._shapes = None
         for shape in shapes:
-            shape._init_cells(max_size)
+            shape._finalize(max_size)
         return shapes
 
 

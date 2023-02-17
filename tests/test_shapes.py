@@ -77,5 +77,5 @@ def test_finalized_size():
 def test_finalized_padding(input_code, padded_code):
     """Shapes are centred or left/up of centre"""
     shape = Shape(code=input_code)
-    shape._init_cells((5, 5))
+    shape._finalize((5, 5))
     assert "".join(("-x")[v] for v in shape.cells) == padded_code
