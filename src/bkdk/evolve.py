@@ -13,9 +13,13 @@ def eval_genomes(genomes, config):
 
 def eval_network(net):
     player = Player(net.activate)
-    # XXX run multiple games?
-    board = Board()
-    score, penalty = player.run_game(board)
+    fitness = 0
+    for _ in range(5):  # XXX make configurable?
+        board = Board()
+        score, penalty = player.run_game(board)
+        fitness += score
+        fitness -= penalty / 10  # XXX make configurable?
+    return fitness
 
 
 # Load configuration.
