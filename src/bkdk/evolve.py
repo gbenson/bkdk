@@ -1,4 +1,5 @@
 import neat
+import pickle
 from .board import Board
 from .player import Player
 
@@ -36,13 +37,11 @@ p.add_reporter(neat.StdOutReporter(False))
 # Run until a solution is found.
 winner = p.run(eval_genomes)
 
-# Display the winning genome.
-print('\nBest genome:\n{!s}'.format(winner))
+# Save the winning genome.
+with open("winner.pkl", "wb") as fp:
+    pickle.dump(winner, fp)
 
-# Show output of the most fit genome against training data.
-print('\nOutput:')
+# Run a game with the most fit genome.
+print('\nWinner:')
 winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
-for xi, xo in zip(xor_inputs, xor_outputs):  # noqa: F821
-    output = winner_net.activate(xi)
-    print("  input {!r}, expected output {!r}, got {!r}".format(
-        xi, xo, output))
+eval_network(winner_net)
