@@ -12,15 +12,17 @@ def eval_genomes(genomes, config):
             genome.fitness += eval_network(net)
 
 
-def eval_network(net):
+def eval_network(net, num_games=5, penalty_weight=0.1, verbose=False):
     player = Player(net.activate)
     fitness = 0
-    for _ in range(5):  # XXX make configurable?
+    for _ in range(num_games):
         board = Board()
         score, penalty = player.run_game(board)
+        if verbose:
+            print(f"score: {score}, penalty: {penalty}")
         fitness += score
-        fitness -= penalty / 10  # XXX make configurable?
-    return fitness
+        fitness -= penalty * penalty_weight
+    return fitness / num_games
 
 
 # Load configuration.
@@ -44,4 +46,11 @@ with open("winner.pkl", "wb") as fp:
 # Run a game with the most fit genome.
 print('\nWinner:')
 winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
-eval_network(winner_net)
+if False:
+    winner_player = Player(winner_net.activate, verbose=True)
+    final_board = Board()
+    score, penalty = winner_player.run_game(final_board)
+    print(f"final score: {score}, penalty: {penalty}")
+else:
+    fitness = eval_network(winner_net, verbose=True, penalty_weight=0)
+    print(f"average score: {fitness}")

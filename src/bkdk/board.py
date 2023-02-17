@@ -99,9 +99,6 @@ class Board:
               if grouping.is_complete]
              for groupings in (self.rows, self.columns, self.boxes)),
             start=[])
-        if completed:
-            print(self)
         for grouping in completed:
-            print("BANG!")
             grouping.clear()
         return completed

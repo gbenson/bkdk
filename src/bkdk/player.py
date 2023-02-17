@@ -1,6 +1,7 @@
 class Player:
-    def __init__(self, activate):
+    def __init__(self, activate, verbose=False):
         self._activate = activate
+        self.verbose = verbose
 
     _EMPTY_CHOICE = tuple(0 for _ in range(25))
 
@@ -56,8 +57,9 @@ class Player:
             shape = board.choices[choice]
             is_legal = (shape is not None
                         and board.can_place_at(rowcol, shape))
-            print(f"output {output} => shape {choice} at {rowcol}?"
-                  f" {is_legal and 'YES!' or 'no'}")
+            if self.verbose:
+                print(f"output {output} => shape {choice} at {rowcol}?"
+                      f" {is_legal and 'YES!' or 'no'}")
             if not is_legal:
                 penalty += 1
                 continue
@@ -76,6 +78,7 @@ class Player:
             last_score = score
             score += shape.score
             score += len(board.resolve()) * 9
-            print(board)
-            print(f"score {last_score} => {score}")
+            if self.verbose:
+                print(board)
+                print(f"score {last_score} => {score}")
         return score, penalties
