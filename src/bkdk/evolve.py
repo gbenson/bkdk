@@ -6,14 +6,19 @@ from .player import Player
 
 
 def eval_genomes(genomes, config):
+    """Fitness function wrapped for Population.run()."""
     for genome_id, genome in genomes:
-        net = neat.nn.FeedForwardNetwork.create(genome, config)
-        genome.fitness = 0
-        for _ in range(5):
-            genome.fitness += eval_network(net)
+        genome.fitness = eval_genome(genome, config)
+
+
+def eval_genome(genome, config):
+    """Fitness function wrapped for ParallelEvaluator."""
+    net = neat.nn.FeedForwardNetwork.create(genome, config)
+    return eval_network(net)
 
 
 def eval_network(net, num_games=5, penalty_weight=0.1, verbose=False):
+    """Evaluate the fitness of the supplied neural network."""
     player = Player(net.activate)
     fitness = 0
     for _ in range(num_games):
