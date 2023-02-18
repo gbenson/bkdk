@@ -1,6 +1,7 @@
 import multiprocessing
 import neat
 import pickle
+import sys
 from . import visualize
 from .board import Board
 from .player import Player
@@ -68,5 +69,12 @@ def run(config_filename):
     visualize.plot_species(stats, view=True)
 
 
-if __name__ == "__main__":
-    run("neat.cfg")
+def main(args=None):
+    if args is None:
+        args = sys.argv[1:]
+
+    if len(args) == 1:
+        return run(*args)
+
+    print("usage: evolve CONFIGFILE", file=sys.stderr)
+    sys.exit(1)
