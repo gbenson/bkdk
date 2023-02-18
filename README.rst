@@ -8,3 +8,28 @@ that kicks butt at Super Mario World”.
 
 .. Links
 .. _MarI/O: https://www.youtube.com/watch?v=qv6UVOQ0F44
+
+How to run it?
+--------------
+
+Clone the repo::
+
+ git clone https://github.com/gbenson/bkdk.git
+ cd bkdk
+
+Create a virtual environment::
+
+ python3 -m venv venv
+ . venv/bin/activate
+
+Upgrade pip and setuptools::
+
+ pip install --upgrade pip setuptools
+
+Install in editable mode::
+
+ pip install -e .
+
+Evolve a network::
+
+ evolve neat.cfg
