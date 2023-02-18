@@ -1,3 +1,4 @@
+import multiprocessing
 import neat
 import pickle
 from . import visualize
@@ -49,7 +50,8 @@ def run(config_filename):
     p.add_reporter(neat.Checkpointer(1))
 
     # Run until a solution is found.
-    winner = p.run(eval_genomes)
+    pe = neat.ParallelEvaluator(multiprocessing.cpu_count(), eval_genome)
+    winner = p.run(pe.evaluate)
 
     # Save the winning genome.
     with open("winner.pkl", "wb") as fp:
