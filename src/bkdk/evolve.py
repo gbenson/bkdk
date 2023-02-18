@@ -26,38 +26,40 @@ def eval_network(net, num_games=5, penalty_weight=0.1, verbose=False):
     return fitness / num_games
 
 
-# Load configuration.
-config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
-                     neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                     "neat.cfg")
+def run(config_filename):
+    """Evolve a feed-forward neural network to play the game."""
 
-# Create the population, which is the top-level object for a NEAT run.
-p = neat.Population(config)
+    # Load configuration.
+    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                         neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                         config_filename)
 
-# Add a stdout reporter to show progress in the terminal.
-p.add_reporter(neat.StdOutReporter(True))
-stats = neat.StatisticsReporter()
-p.add_reporter(stats)
-p.add_reporter(neat.Checkpointer(1))
+    # Create the population, which is the top-level object for a NEAT run.
+    p = neat.Population(config)
 
-# Run until a solution is found.
-winner = p.run(eval_genomes)
+    # Add a stdout reporter to show progress in the terminal.
+    p.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    p.add_reporter(stats)
+    p.add_reporter(neat.Checkpointer(1))
 
-# Save the winning genome.
-with open("winner.pkl", "wb") as fp:
-    pickle.dump(winner, fp)
+    # Run until a solution is found.
+    winner = p.run(eval_genomes)
 
-# Run a game with the most fit genome.
-print('\nWinner:')
-winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
-if False:
-    winner_player = Player(winner_net.activate, verbose=True)
-    final_board = Board()
-    score, penalty = winner_player.run_game(final_board)
-    print(f"final score: {score}, penalty: {penalty}")
-else:
+    # Save the winning genome.
+    with open("winner.pkl", "wb") as fp:
+        pickle.dump(winner, fp)
+
+    # Run a game with the most fit genome.
+    print("\nWinner:")
+    winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
     fitness = eval_network(winner_net, verbose=True, penalty_weight=0)
     print(f"average score: {fitness}")
 
+    # Visualize some things.
     visualize.plot_stats(stats, ylog=False, view=True)
     visualize.plot_species(stats, view=True)
+
+
+if __name__ == "__main__":
+    run("neat.cfg")
