@@ -1,10 +1,13 @@
 import multiprocessing
-import neat
 import pickle
 import sys
+
+import gymnasium as gym
+import neat
+
+from gymnasium.spaces.utils import flatten
+
 from . import visualize
-from .board import Board
-from .player import Player
 
 
 def eval_genomes(genomes, config):
@@ -19,18 +22,42 @@ def eval_genome(genome, config):
     return eval_network(net)
 
 
-def eval_network(net, num_games=5, penalty_weight=0.1, verbose=False):
+def eval_network(net, num_games=5):
     """Evaluate the fitness of the supplied neural network."""
-    player = Player(net.activate)
-    fitness = 0
+    env = gym.make("bkdk/BKDK-v0")
+
+    total_reward = 0
     for _ in range(num_games):
-        board = Board()
-        score, penalty = player.run_game(board)
-        if verbose:
-            print(f"score: {score}, penalty: {penalty}")
-        fitness += score
-        fitness -= penalty * penalty_weight
-    return fitness / num_games
+        observation, info = env.reset()  # XXX seed?
+        terminated = truncated = False
+
+        while not (terminated or truncated):
+            inputs = flatten(env.observation_space, observation)
+            outputs = net.activate(inputs)
+
+            ranked_outputs = list(sorted(
+                ((activation, index)
+                 for index, activation in enumerate(outputs)),
+                reverse=True))
+
+            # Try each action in order, until either a) we performed a
+            # legal move (reward > 0), in which case the board changed
+            # and we need to re-run the net, or b) the episode
+            # terminated or was truncated.
+            for _, action in ranked_outputs:
+                (observation,
+                 reward,
+                 terminated, truncated, info) = env.step(action)
+
+                if terminated or truncated or reward > 0:
+                    break
+
+                # Penalize illegal moves.
+                total_reward -= 1
+            total_reward += reward
+
+    env.close()
+    return total_reward / num_games
 
 
 def run(config_filename):
