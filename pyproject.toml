@@ -1,9 +1,9 @@
 [project]
 name = "bkdk"
 dependencies = [
-    "neat-python==0.92",
     "graphviz",
     "matplotlib",
+    "neat-python==0.92",
 ]
 dynamic = ["version"]
 
