@@ -3,6 +3,7 @@
 import numpy as np
 import pytest
 import gymnasium as gym
+from gymnasium.spaces.utils import flatten_space
 import bkdk  # noqa: F401
 
 # Gymnasium's passive environment checker issues warnings about our
@@ -17,6 +18,55 @@ def env():
     env = gym.make("bkdk/BKDK-v0")
     yield env
     env.close()
+
+
+@pytest.mark.filterwarnings(f"ignore:{_GYMNASIUM_269}")
+class TestSpaces:
+    """Testcases for the action and observation spaces."""
+
+    @pytest.fixture(params=(
+        ("observation", 9*9 + 3*5*5),
+        ("action", 3*9*9),
+    ))
+    def spacename_expectsize(self, request):
+        spacename_base, expect_size = request.param
+        return spacename_base + "_space", expect_size
+
+    @pytest.fixture
+    def testspace(self, env, spacename_expectsize):
+        spacename, _ = spacename_expectsize
+        return getattr(env, spacename)
+
+    @pytest.fixture
+    def expect_size(self, env, spacename_expectsize):
+        _, expect_size = spacename_expectsize
+        return expect_size
+
+    @pytest.fixture
+    def flatspace(self, testspace):
+        return flatten_space(testspace)
+
+    def test_is_flattenable(self, testspace):
+        """The space is flattenable."""
+        assert testspace.is_np_flattenable
+
+    def test_flattened_dtype(self, flatspace):
+        """The flattened space has an integer dtype."""
+        assert np.issubdtype(flatspace.dtype, np.integer)
+
+    def test_flattened_lower_bound(self, flatspace, expect_size):
+        """The flattened space has the correct lower bound."""
+        assert np.array_equal(flatspace.low,
+                              np.zeros(expect_size, dtype=np.uint8))
+
+    def test_flattened_upper_bound(self, flatspace, expect_size):
+        """The flattened space has the correct upper bound."""
+        assert np.array_equal(flatspace.high,
+                              np.ones(expect_size, dtype=np.uint8))
+
+    def test_flattened_shape(self, flatspace, expect_size):
+        """The flattened space has the correct shape."""
+        assert flatspace.shape == (expect_size,)
 
 
 @pytest.fixture
