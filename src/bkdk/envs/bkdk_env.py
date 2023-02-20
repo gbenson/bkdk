@@ -3,6 +3,8 @@ import numpy as np
 
 from gymnasium import spaces
 
+from ..board import Board
+
 
 class BkdkEnv(gym.Env):
     def __init__(self, render_mode=None):
@@ -24,3 +26,26 @@ class BkdkEnv(gym.Env):
         `column + row*BOARD_SIZE + choice_index*BOARD_SIZE**2`.
         """
         self.action_space = spaces.Discrete(board_size**2 * num_choices)
+
+    @property
+    def _observation(self):
+        return {
+            "board": np.asarray([[int(cell.is_set) for cell in row]
+                                 for row in self._board.rows],
+                                dtype=np.uint8),
+            "choices": np.asarray([shape._rows
+                                   for shape in self._board.choices],
+                                  dtype=np.uint8),
+        }
+
+    @property
+    def _info(self):
+        # XXX put valid moves in here? current score?? choice scores???
+        return {}
+
+    def reset(self, seed=None, options={}):
+        """Start a new game. Returns the first observation and its
+        associated auxilliary information."""
+        super().reset(seed=seed)
+        self._board = Board()
+        return self._observation, self._info
