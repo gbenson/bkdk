@@ -49,12 +49,14 @@ class Shape:
 
     def _finalize(self, max_size):
         max_rows, max_columns = max_size
-        self.cells = sum(
+        # XXX Gym environment uses _rows to construct observations
+        self._rows = tuple(
             self._pad_rows(
                 (self._pad_row(row, max_columns)
                  for row in self.rows),
-                max_rows),
-            start=())
+                max_rows))
+        # XXX can we omit self.cells entirely?
+        self.cells = sum(self._rows, start=())
         self.score = sum(self.cells)
 
     def _pad_rows(self, rows, max_rows):
