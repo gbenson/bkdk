@@ -65,21 +65,22 @@ def test_initial_choices(initial_choices):
         initial_choices,
         np.array(
             (
-                # shape 0: code="x-x_xxx"
-                (ZEROS,
-                 (0, 1, 0, 1, 0),
-                 (0, 1, 1, 1, 0),
-                 ZEROS, ZEROS),
-
-                # shape 1: code="x"
+                # shape 0: code="xx"
                 (ZEROS, ZEROS,
-                 (0, 0, 1, 0, 0),
+                 (0, 1, 1, 0, 0),
                  ZEROS, ZEROS),
 
-                # shape 2: code="xx_-x"
+                # shape 1: code="xx_x-_xx"
                 (ZEROS,
                  (0, 1, 1, 0, 0),
-                 (0, 0, 1, 0, 0),
+                 (0, 1, 0, 0, 0),
+                 (0, 1, 1, 0, 0),
+                 ZEROS),
+
+                # shape 2: code="--x_xxx"
+                (ZEROS,
+                 (0, 0, 0, 1, 0),
+                 (0, 1, 1, 1, 0),
                  ZEROS, ZEROS),
             ),
             dtype=np.uint8))

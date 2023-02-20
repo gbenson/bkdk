@@ -47,5 +47,5 @@ class BkdkEnv(gym.Env):
         """Start a new game. Returns the first observation and its
         associated auxilliary information."""
         super().reset(seed=seed)
-        self._board = Board()
+        self._board = Board(random_number_generator=self.np_random)
         return self._observation, self._info

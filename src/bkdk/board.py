@@ -32,7 +32,8 @@ class Grouping(tuple):
 
 
 class Board:
-    def __init__(self):
+    def __init__(self, random_number_generator=None):
+        self._rng = random_number_generator
         self.rows = tuple(Grouping(Cell((row_index, column_index))
                                    for column_index in range(9))
                           for row_index in range(9))
@@ -50,7 +51,7 @@ class Board:
         return tuple(Grouping(box) for box in boxes)
 
     def _new_choices(self):
-        self.choices = [random_shape() for _ in range(3)]
+        self.choices = [random_shape(self._rng) for _ in range(3)]
 
     def __str__(self):
         prefix = f"{self.__class__.__name__}["

@@ -142,8 +142,10 @@ class ShapeSetBuilder:
 ALL_SHAPES = tuple(ShapeSetBuilder().finalize())
 
 
-def random_shape():
-    return random.choice(ALL_SHAPES)
+def random_shape(_random=None):
+    if _random is None:
+        _random = random
+    return _random.choice(ALL_SHAPES)
 
 
 if __name__ == "__main__":
