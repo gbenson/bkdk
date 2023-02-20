@@ -70,14 +70,8 @@ class Player:
         while (move := self.next_move(board)) is not None:
             choice, rowcol, penalty = move
             penalties += penalty
-            shape = board.choices[choice]
-            board.place_at(rowcol, shape)
-            board.choices[choice] = None
-            if all(c is None for c in board.choices):
-                board._new_choices()
             last_score = score
-            score += shape.score
-            score += len(board.resolve()) * 9
+            score += board.one_move(choice, rowcol)
             if self.verbose:
                 print(board)
                 print(f"score {last_score} => {score}")

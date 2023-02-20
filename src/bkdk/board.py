@@ -102,3 +102,16 @@ class Board:
         for grouping in completed:
             grouping.clear()
         return completed
+
+    def one_move(self, choice, rowcol, check_move=True):
+        """Perform one move of the game.  Returns the points resulting
+        from the move.  Returns 0 if check_move is True and the move is
+        invalid."""
+        shape = self.choices[choice]
+        if check_move and not self.can_place_at(rowcol, shape):
+            return 0
+        self.place_at(rowcol, shape)
+        self.choices[choice] = None
+        if all(c is None for c in self.choices):
+            self._new_choices()
+        return shape.score + len(self.resolve()) * 9
