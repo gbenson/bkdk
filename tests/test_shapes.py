@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 import random
 from bkdk.shapes import Shape, ALL_SHAPES, random_shape
@@ -32,7 +33,7 @@ def test_random_shape():
 
 def test_finalized_size():
     """Shapes finalize to 5*5 = 25 cells."""
-    assert len(ALL_SHAPES[0].cells) == 25
+    assert ALL_SHAPES[0]._np_padded.shape == (5, 5)
 
 
 @pytest.mark.parametrize(
@@ -78,7 +79,8 @@ def test_finalized_padding(input_code, padded_code):
     """Shapes are centred or left/up of centre"""
     shape = Shape(code=input_code)
     shape._finalize((5, 5))
-    assert "".join(("-x")[v] for v in shape.cells) == padded_code
+    padded_cells = np.concatenate(shape._np_padded)
+    assert "".join(("-x")[v] for v in padded_cells) == padded_code
 
 
 @pytest.mark.parametrize(

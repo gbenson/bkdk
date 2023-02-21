@@ -66,8 +66,6 @@ class Shape:
                  for row in self.rows),
                 max_rows)),
             dtype=np.uint8)
-        # XXX can we omit self.cells entirely?
-        self.cells = np.concatenate(self._np_padded)
 
     def _pad_rows(self, rows, max_rows):
         rows = list(rows)
