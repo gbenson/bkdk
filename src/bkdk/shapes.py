@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 
 class Shape:
@@ -59,14 +60,14 @@ class Shape:
 
     def _finalize(self, max_size):
         max_rows, max_columns = max_size
-        # XXX Gym environment uses _rows to construct observations
-        self._rows = tuple(
-            self._pad_rows(
+        self._np_padded = np.asarray(
+            (self._pad_rows(
                 (self._pad_row(row, max_columns)
                  for row in self.rows),
-                max_rows))
+                max_rows)),
+            dtype=np.uint8)
         # XXX can we omit self.cells entirely?
-        self.cells = sum(self._rows, start=())
+        self.cells = np.concatenate(self._np_padded)
 
     def _pad_rows(self, rows, max_rows):
         rows = list(rows)

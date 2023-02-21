@@ -25,19 +25,19 @@ class Env(gym.Env):
         # An integer, encoded as per self.step.__doc__
         self.action_space = spaces.Discrete(self.board_size**2 * num_choices)
 
+        self._empty_shape = type("EmptyShape", (), {})()
+        self._empty_shape._np_padded = None
+
     @property
     def _observation(self):
         return {
             "board": np.asarray([[int(cell.is_set) for cell in row]
                                  for row in self._board.rows],
                                 dtype=np.uint8),
-            "choices": np.asarray([
-                shape is None
-                and tuple(tuple(0 for _ in range(self.shape_size))
-                          for _ in range(self.shape_size))
-                or shape._rows
-                for shape in self._board.choices],
-                                  dtype=np.uint8),
+            "choices": np.asarray(
+                [(shape or self._empty_shape)._np_padded
+                 for shape in self._board.choices],
+                dtype=np.uint8),
         }
 
     @property
@@ -49,7 +49,14 @@ class Env(gym.Env):
         """Start a new game. Returns the first observation and its
         associated auxilliary information."""
         super().reset(seed=seed)
+
         self._board = Board(random_number_generator=self.np_random)
+
+        if self._empty_shape._np_padded is None:
+            template = self._board.choices[0]._np_padded
+            self._empty_shape._np_padded = np.zeros(
+                template.shape, template.dtype)
+
         return self._observation, self._info
 
     def step(self, action):
