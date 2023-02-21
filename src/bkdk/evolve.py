@@ -104,7 +104,7 @@ def run(config_filename, max_generations=None, num_workers=None):
     # Run a game with the most fit genome.
     print("\nWinner:")
     winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
-    fitness = eval_network(winner_net, verbose=True, penalty_weight=0)
+    fitness = eval_network(winner_net)
     print(f"average score: {fitness}")
 
     # Visualize some things.
