@@ -3,10 +3,10 @@ import numpy as np
 
 from gymnasium import spaces
 
-from ..board import Board
+from .board import Board
 
 
-class BkdkEnv(gym.Env):
+class Env(gym.Env):
     def __init__(self, render_mode=None):
         # XXX fetch these from somewhere... bkdk.Board?
         self.board_size = 9

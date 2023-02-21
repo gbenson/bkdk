@@ -8,7 +8,7 @@ __version__ = "0.0.2.dev"
 
 _gym_env_register(
     id="bkdk/BKDK-v0",
-    entry_point="bkdk.envs:BkdkEnv",
+    entry_point="bkdk.gym:Env",
 )
 
 # Gymnasium's passive environment checker issues warnings about our
