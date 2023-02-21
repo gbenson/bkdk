@@ -70,10 +70,12 @@ class Board:
         top-left corner at rowcol, False otherwise."""
         if any(d < 0 for d in rowcol):
             return False
-        if any(d + s > 9 for d, s in zip(rowcol, shape.size)):
+        try:
+            return not any(cell.is_set
+                           for cell in self._cells_beneath(rowcol,
+                                                           shape))
+        except IndexError:
             return False
-        return not any(cell.is_set
-                       for cell in self._cells_beneath(rowcol, shape))
 
     def can_place(self, shape):
         """Return True if shape may be placed somewhere on the board,
