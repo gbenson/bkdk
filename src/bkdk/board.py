@@ -61,11 +61,9 @@ class Board:
     def _cells_beneath(self, rowcol, shape):
         """Return a generator that yields the board cells that would
         become set were shape to be placed at rowcol."""
-        row_index, column_index = rowcol
-        for srcrow, dstrow in zip(shape.rows, self.rows[row_index:]):
-            for srccell, dstcell in zip(srcrow, dstrow[column_index:]):
-                if srccell:
-                    yield dstcell
+        place_row, place_col = rowcol
+        for row, col in shape.set_cells:
+            yield self.rows[place_row + row][place_col + col]
 
     def can_place_at(self, rowcol, shape):
         """Return True if shape may be placed on the board with its
