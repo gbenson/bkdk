@@ -1,3 +1,4 @@
+import argparse
 import multiprocessing
 import pickle
 import sys
@@ -60,8 +61,20 @@ def eval_network(net, num_games=5):
     return total_reward / num_games
 
 
-def run(config_filename):
-    """Evolve a feed-forward neural network to play the game."""
+def run(config_filename, max_generations=None, num_workers=None):
+    """Evolve a feed-forward neural network to play the game.
+
+    :param config_filename: NEAT-Python configuration file.
+    :param max_generations: If not None, halt the genetic algorithm
+                            after this many generations.  If None, run
+                            until a solution is found or extinction
+                            occurs.
+    :param num_workers: Number of worker processes to parallelize
+                        genome evaluation across.  Defaults to one
+                        per CPU.
+    """
+    if num_workers is None:
+        num_workers = multiprocessing.cpu_count()
 
     # Load configuration.
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
@@ -77,9 +90,12 @@ def run(config_filename):
     p.add_reporter(stats)
     p.add_reporter(neat.Checkpointer(1))
 
-    # Run until a solution is found.
-    pe = neat.ParallelEvaluator(multiprocessing.cpu_count(), eval_genome)
-    winner = p.run(pe.evaluate)
+    # Run the GA until max_generations or a solution is found.
+    if num_workers == 1:
+        ff = eval_genomes
+    else:
+        ff = neat.ParallelEvaluator(num_workers, eval_genome).evaluate
+    winner = p.run(ff, max_generations)
 
     # Save the winning genome.
     with open("winner.pkl", "wb") as fp:
@@ -100,8 +116,16 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
-    if len(args) == 1:
-        return run(*args)
+    parser = argparse.ArgumentParser(description="BKDK evolver")
+    parser.add_argument("--profile", action="store_true")
+    parser.add_argument("configfile")
+    args = parser.parse_args()
 
-    print("usage: evolve CONFIGFILE", file=sys.stderr)
-    sys.exit(1)
+    if args.profile:
+        import cProfile
+        return cProfile.runctx(
+            "run(args.configfile, max_generations=2, num_workers=1)",
+            globals(), locals(),
+            filename="evolve.stats")
+
+    return run(args.configfile)
