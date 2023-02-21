@@ -67,6 +67,7 @@ class BkdkEnv(gym.Env):
 
         reward = self._board.one_move(choice, (row, column))
         terminated = not any(self._board.can_place(shape)
-                             for shape in self._board.choices)
+                             for shape in self._board.choices
+                             if shape is not None)
 
         return self._observation, reward, terminated, False, self._info

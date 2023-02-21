@@ -104,12 +104,13 @@ class Board:
             grouping.clear()
         return completed
 
-    def one_move(self, choice, rowcol, check_move=True):
+    def one_move(self, choice, rowcol):
         """Perform one move of the game.  Returns the points resulting
-        from the move.  Returns 0 if check_move is True and the move is
-        invalid."""
+        from the move.  Returns 0 if the move is invalid."""
         shape = self.choices[choice]
-        if check_move and not self.can_place_at(rowcol, shape):
+        if shape is None:
+            return 0
+        if not self.can_place_at(rowcol, shape):
             return 0
         self.place_at(rowcol, shape)
         self.choices[choice] = None
