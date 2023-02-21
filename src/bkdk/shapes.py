@@ -11,12 +11,22 @@ class Shape:
         self.rows = tuple(tuple(int(c == "x")
                                 for c in row)
                           for row in code.split("_"))
+        self.set_cells = sum(
+            (tuple((row, col)
+                   for col, is_set in enumerate(cells)
+                   if is_set)
+             for row, cells in enumerate(self.rows)),
+            start=())
 
     @property
     def code(self):
         return "_".join("".join("-x"[c]
                                 for c in row)
                         for row in self.rows)
+
+    @property
+    def score(self):
+        return len(self.set_cells)
 
     def __str__(self):
         return (f'<{__name__}.{self.__class__.__name__}'
@@ -57,7 +67,6 @@ class Shape:
                 max_rows))
         # XXX can we omit self.cells entirely?
         self.cells = sum(self._rows, start=())
-        self.score = sum(self.cells)
 
     def _pad_rows(self, rows, max_rows):
         rows = list(rows)

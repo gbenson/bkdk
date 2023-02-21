@@ -79,3 +79,25 @@ def test_finalized_padding(input_code, padded_code):
     shape = Shape(code=input_code)
     shape._finalize((5, 5))
     assert "".join(("-x")[v] for v in shape.cells) == padded_code
+
+
+@pytest.mark.parametrize(
+    "input_code, expected_set_cells",
+    (("x",
+      ((0, 0),)),
+     ("xx",
+      ((0, 0), (0, 1))),
+     ("x_x",
+      ((0, 0), (1, 0))),
+     ("x-_-x",
+      ((0, 0), (1, 1))),
+     ("-x_x-",
+      ((0, 1), (1, 0))),
+     ("x-_xx",
+      ((0, 0), (1, 0), (1, 1))),
+     ("--x_--x_xxx",
+      ((0, 2), (1, 2), (2, 0), (2, 1), (2, 2))),
+     ))
+def test_set_cells(input_code, expected_set_cells):
+    """Shape.set_cells is an sorted tuple of the shape's set cells."""
+    assert Shape(code=input_code).set_cells == expected_set_cells
