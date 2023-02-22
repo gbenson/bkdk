@@ -1,3 +1,16 @@
+Version 0.0.3
+-------------
+
+Unreleased
+
+- Genome fitness is evaluated using a per-generation random seed,
+  such that every member of a generation is evaluated using the same
+  sequence of shapes.
+- ``evolve --profile`` sets and propagates the random seed to
+  reduce spurious difference between profile runs.
+- ``Board.can_place_at`` is now three times faster.
+
+
 Version 0.0.2
 -------------
 
