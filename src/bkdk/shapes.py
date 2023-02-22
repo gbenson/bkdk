@@ -45,11 +45,6 @@ class Shape:
     def size(self):
         return self.num_rows, self.num_columns
 
-    def as_asciiart(self):
-        return "\n".join("".join((" #")[c]
-                                 for c in row)
-                         for row in self.rows)
-
     def mirror(self):
         return Shape("_".join("".join(reversed(col))
                               for col in self.code.split("_")))
@@ -154,11 +149,3 @@ def random_shape(_random=None):
     if _random is None:
         _random = random
     return _random.choice(ALL_SHAPES)
-
-
-if __name__ == "__main__":
-    for shape in ALL_SHAPES:
-        print(f"{shape}:")
-        print(shape.as_asciiart())
-        print()
-    print(f"{len(ALL_SHAPES)} shapes total")
