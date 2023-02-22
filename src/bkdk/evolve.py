@@ -21,16 +21,17 @@ def eval_genomes(genomes, config):
 def eval_genome(genome, config):
     """Fitness function wrapped for ParallelEvaluator."""
     net = neat.nn.FeedForwardNetwork.create(genome, config)
-    return eval_network(net)
+    return eval_network(net, seed=config.random_seed)
 
 
-def eval_network(net, num_games=5):
+def eval_network(net, num_games=5, seed=None):
     """Evaluate the fitness of the supplied neural network."""
     env = gym.make("bkdk/BKDK-v0")
 
     total_reward = 0
     for _ in range(num_games):
-        observation, info = env.reset()  # XXX seed?
+        observation, info = env.reset(seed=seed)
+        seed = None
         terminated = truncated = False
 
         while not (terminated or truncated):
@@ -62,6 +63,15 @@ def eval_network(net, num_games=5):
     return total_reward / num_games
 
 
+class RandomSeedUpdater(neat.reporting.BaseReporter):
+    def __init__(self, config):
+        self._config = config
+
+    def start_generation(self, generation):
+        self._config.random_seed = random.randint(0, sys.maxsize)
+        random.seed(self._config.random_seed)
+
+
 def run(args):
     """Evolve a feed-forward neural network to play the game."""
 
@@ -84,6 +94,7 @@ def run(args):
 
     # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))
+    p.add_reporter(RandomSeedUpdater(config))
     if not args.profile:
         stats = neat.StatisticsReporter()
         p.add_reporter(stats)
