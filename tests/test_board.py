@@ -1,3 +1,4 @@
+import copy
 import pytest
 import random
 from bkdk import Board
@@ -218,3 +219,40 @@ def test_initial_choices():
     assert board.choices[0].code == "xx_x-_x-"
     assert board.choices[1].code == "xxxx"
     assert board.choices[2].code == "xx"
+
+
+@pytest.mark.parametrize(
+    "rowcol, shape",
+    (((3, 0), "x" * 9),
+     ((0, 5), "_".join("x" * 9)),
+     ((6, 3), "_".join(["xxx"] * 3)),
+     ))
+def test_single_resolution(rowcol, shape):
+    """Completed rows, columns and boxes resolve as expected."""
+    board = Board()
+    board.place_at(rowcol, Shape(code=shape))
+    assert board.resolve() == 1
+    assert not any(cell.is_set for cell in board.cells)
+
+
+@pytest.mark.parametrize(
+    "rowcol, shape",
+    (((3, 0), f"-{'x' * 8}_x{'-' * 8}"),
+     ((3, 0), f"{'-' * 8}x_{'x' * 8}-"),
+
+     ((0, 5), "_".join(["-x"] + ["x-"] * 7 + ["x-"])),
+     ((0, 5), "_".join(["-x"] + ["-x"] * 7 + ["x-"])),
+
+     ((2, 3), "_".join(["xxx"] * 3)),
+     ((4, 3), "_".join(["xxx"] * 3)),
+     ((3, 2), "_".join(["xxx"] * 3)),
+     ((3, 4), "_".join(["xxx"] * 3)),
+     ))
+def test_offset_nonresolution(rowcol, shape):
+    """Offset/shifted rows, columns and boxes do not resolve."""
+    board = Board()
+    board.place_at(rowcol, Shape(code=shape))
+    print(board)
+    saved_cells = copy.copy(board.cells)
+    assert board.resolve() == 0
+    assert board.cells == saved_cells
