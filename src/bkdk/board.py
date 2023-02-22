@@ -110,7 +110,7 @@ class Board:
             start=[])
         for grouping in completed:
             grouping.clear()
-        return completed
+        return len(completed)
 
     def one_move(self, choice, rowcol):
         """Perform one move of the game.  Returns the points resulting
@@ -124,4 +124,4 @@ class Board:
         self.choices[choice] = None
         if all(c is None for c in self.choices):
             self._new_choices()
-        return shape.score + len(self.resolve()) * 9
+        return shape.score + self.resolve() * 9
