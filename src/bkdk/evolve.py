@@ -62,42 +62,40 @@ def eval_network(net, num_games=5):
     return total_reward / num_games
 
 
-def run(config_filename, max_generations=None, num_workers=None):
-    """Evolve a feed-forward neural network to play the game.
+def run(args):
+    """Evolve a feed-forward neural network to play the game."""
 
-    :param config_filename: NEAT-Python configuration file.
-    :param max_generations: If not None, halt the genetic algorithm
-                            after this many generations.  If None, run
-                            until a solution is found or extinction
-                            occurs.
-    :param num_workers: Number of worker processes to parallelize
-                        genome evaluation across.  Defaults to one
-                        per CPU.
-    """
-    if num_workers is None:
-        num_workers = multiprocessing.cpu_count()
+    if args.num_workers is None:
+        args.num_workers = multiprocessing.cpu_count()
+
+    # Seed the random number generator, if requested.
+    if args.random_seed is not None:
+        random.seed(args.random_seed)
 
     # Load configuration.
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                         config_filename)
+                         args.config_filename)
+    if args.population_size is not None:
+        config.pop_size = args.population_size
 
     # Create the population, which is the top-level object for a NEAT run.
     p = neat.Population(config)
 
     # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))
-    stats = neat.StatisticsReporter()
-    p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(1))
+    if not args.profile:
+        stats = neat.StatisticsReporter()
+        p.add_reporter(stats)
+        p.add_reporter(neat.Checkpointer(1))
 
     # Run the GA until max_generations or a solution is found.
-    if num_workers == 1:
+    if args.num_workers == 1:
         ff = eval_genomes
     else:
-        ff = neat.ParallelEvaluator(num_workers, eval_genome).evaluate
-    winner = p.run(ff, max_generations)
-    if max_generations is not None:
+        ff = neat.ParallelEvaluator(args.num_workers, eval_genome).evaluate
+    winner = p.run(ff, args.max_generations)
+    if args.profile:
         return
 
     # Save the winning genome.
@@ -120,16 +118,33 @@ def main(args=None):
         args = sys.argv[1:]
 
     parser = argparse.ArgumentParser(description="BKDK evolver")
-    parser.add_argument("--profile", action="store_true")
-    parser.add_argument("configfile")
+
+    parser.add_argument("--max-generations", action="store",
+                        help="halt the GA after MAX_GENERATIONS generations")
+    parser.add_argument("--num-workers", action="store")
+    parser.add_argument("--population-size", action="store",
+                        help="override the configured population size")
+    parser.add_argument("--profile", action="store_true",
+                        help="run in Python profiler")
+    parser.add_argument("--random-seed", action="store",
+                        help="seed Python's random number generator")
+    parser.add_argument("config_filename",
+                        help="NEAT-Python configuration file")
     args = parser.parse_args()
 
     if args.profile:
         import cProfile
-        random.seed(186282)
+        if args.max_generations is None:
+            args.max_generations = 2
+        if args.num_workers is None:
+            args.num_workers = 1
+        if args.population_size is None:
+            args.population_size = 10
+        if args.random_seed is None:
+            args.random_seed = 186282
         return cProfile.runctx(
-            "run(args.configfile, max_generations=2, num_workers=1)",
+            "run(args)",
             globals(), locals(),
             filename="evolve.stats")
 
-    return run(args.configfile)
+    return run(args)
