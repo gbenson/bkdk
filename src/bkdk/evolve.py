@@ -1,6 +1,7 @@
 import argparse
 import multiprocessing
 import pickle
+import random
 import sys
 
 import gymnasium as gym
@@ -96,6 +97,8 @@ def run(config_filename, max_generations=None, num_workers=None):
     else:
         ff = neat.ParallelEvaluator(num_workers, eval_genome).evaluate
     winner = p.run(ff, max_generations)
+    if max_generations is not None:
+        return
 
     # Save the winning genome.
     with open("winner.pkl", "wb") as fp:
@@ -123,6 +126,7 @@ def main(args=None):
 
     if args.profile:
         import cProfile
+        random.seed(186282)
         return cProfile.runctx(
             "run(args.configfile, max_generations=2, num_workers=1)",
             globals(), locals(),
