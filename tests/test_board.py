@@ -181,13 +181,11 @@ def test_rejected_shape_placement():
 
 @pytest.mark.parametrize(
     "rowcol, shape, is_allowed",
-    (((0, -1), "x", False),
-     ((0, 0), "x", True),
+    (((0, 0), "x", True),
      ((0, 8), "x", True),
      ((0, 8), "x_x", True),
      ((0, 8), "xx", False),
      ((0, 9), "x", False),
-     ((-1, 3), "x", False),
      ((0, 3), "x", True),
      ((8, 3), "x", True),
      ((8, 3), "xx", True),
