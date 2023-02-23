@@ -17,8 +17,8 @@ def test_rotation(input_code, expected_code):
 
 
 def test_all_shapes():
-    """There are 42 shapes in total"""
-    assert len(ALL_SHAPES) == 42
+    """There are 47 shapes in total"""
+    assert len(ALL_SHAPES) == 47
 
 
 def test_random_shape():
@@ -27,7 +27,7 @@ def test_random_shape():
     assert random_shape().code == "xx_x-_x-"
     assert random_shape().code == "xxxx"
     assert random_shape().code == "xx"
-    assert random_shape().code == "xxx_--x_--x"
+    assert random_shape().code == "--x_-x-_x--"
 
 
 def test_finalized_size():

@@ -120,18 +120,18 @@ def test_initial_choices(initial_choices):
                  (0, 1, 1, 0, 0),
                  ZEROS, ZEROS),
 
-                # shape 1: code="xx_x-_xx"
+                # shape 1: code="-xx_xx-"
                 (ZEROS,
+                 (0, 0, 1, 1, 0),
                  (0, 1, 1, 0, 0),
-                 (0, 1, 0, 0, 0),
-                 (0, 1, 1, 0, 0),
-                 ZEROS),
-
-                # shape 2: code="--x_xxx"
-                (ZEROS,
-                 (0, 0, 0, 1, 0),
-                 (0, 1, 1, 1, 0),
                  ZEROS, ZEROS),
+
+                # shape 2: code="xx_-x_-x"
+                (ZEROS,
+                 (0, 1, 1, 0, 0),
+                 (0, 0, 1, 0, 0),
+                 (0, 0, 1, 0, 0),
+                 ZEROS),
             ),
             dtype=np.uint8))
 
@@ -151,9 +151,10 @@ def test_step(env, action):
     assert np.array_equal(
         observation["board"],
         np.array((ZEROS, ZEROS, ZEROS,
-                  (0, 0, 0,  0, 0, 0,  1, 0, 0),
-                  (0, 0, 0,  0, 1, 1,  1, 0, 0),
-                  ZEROS, ZEROS, ZEROS, ZEROS), dtype=np.uint8))
+                  (0, 0, 0,  0, 1, 1,  0, 0, 0),
+                  (0, 0, 0,  0, 0, 1,  0, 0, 0),
+                  (0, 0, 0,  0, 0, 1,  0, 0, 0),
+                  ZEROS, ZEROS, ZEROS), dtype=np.uint8))
 
     ZEROS = tuple(0 for _ in range(5))
     assert np.array_equal(
@@ -165,12 +166,11 @@ def test_step(env, action):
                  (0, 1, 1, 0, 0),
                  ZEROS, ZEROS),
 
-                # shape 1: code="xx_x-_xx"
+                # shape 1: code="-xx_xx-"
                 (ZEROS,
+                 (0, 0, 1, 1, 0),
                  (0, 1, 1, 0, 0),
-                 (0, 1, 0, 0, 0),
-                 (0, 1, 1, 0, 0),
-                 ZEROS),
+                 ZEROS, ZEROS),
 
                 # shape 2: used up
                 tuple(ZEROS for _ in range(5)),
