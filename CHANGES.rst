@@ -9,6 +9,7 @@ Unreleased
 - ``evolve --profile`` sets and propagates the random seed to
   reduce spurious difference between profile runs.
 - ``Board.can_place_at`` is now three times faster.
+- Five missing shapes have been added.
 
 
 Version 0.0.2

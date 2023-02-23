@@ -93,11 +93,13 @@ class ShapeSetBuilder:
         self._add(code="x--_xxx")  # 2x3 Ls
         self._add(code="-x-_xxx")  # 2x3 Ts
         self._add(code="x-x_xxx")  # 2x3 Us
+        self._add(code="-xx_xx-")  # 2x3 the offset ones
 
         # 3x3 shapes
         self._add(code="x--_-x-_--x")  # 3x3 diagonals
         self._add(code="x--_x--_xxx")  # 3x3 Ls
         self._add(code="xxx_-x-_-x-")  # 3x3 Ts
+        self._add(code="-x-_xxx_-x-")  # 3x3 plus
 
     def _add(self, code=None):
         """Add a shape, and all rotated and mirrored equivalents."""
