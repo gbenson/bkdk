@@ -149,3 +149,13 @@ def random_shape(_random=None):
     if _random is None:
         _random = random
     return _random.choice(ALL_SHAPES)
+
+
+if __name__ == "__main__":
+    for i, shape in enumerate(ALL_SHAPES):
+        if i != 0:
+            print()
+        for line in ("".join((" #")[c]
+                             for c in row).rstrip()
+                     for row in shape.rows):
+            print(f"{i+1:02}: {line}")
