@@ -10,6 +10,8 @@ Unreleased
   reduce spurious difference between profile runs.
 - ``Board.can_place_at`` is now three times faster.
 - Five missing shapes have been added.
+- The ``info`` returned by ``Env.step`` and ``Env.reset`` now includes
+  the game's current score.
 
 
 Version 0.0.2

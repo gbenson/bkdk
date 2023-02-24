@@ -75,6 +75,11 @@ def initial_observation(env):
 
 
 @pytest.fixture
+def initial_info(env):
+    return env.reset(seed=23)[1]
+
+
+@pytest.fixture
 def initial_board(initial_observation):
     return initial_observation["board"]
 
@@ -136,6 +141,12 @@ def test_initial_choices(initial_choices):
             dtype=np.uint8))
 
 
+@pytest.mark.filterwarnings(f"ignore:{_GYMNASIUM_269}")
+def test_initial_score(initial_info):
+    """env.reset() creates a board with zero score."""
+    assert initial_info["score"] == 0
+
+
 @pytest.mark.parametrize(
     "action",
     ((2, 3, 4),  # shape 2, row 3, column 4
@@ -176,3 +187,5 @@ def test_step(env, action):
                 tuple(ZEROS for _ in range(5)),
             ),
             dtype=np.uint8))
+
+    assert info["score"] == 4

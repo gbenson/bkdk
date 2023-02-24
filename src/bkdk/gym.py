@@ -42,8 +42,9 @@ class Env(gym.Env):
 
     @property
     def _info(self):
-        # XXX put valid moves in here? current score?? choice scores???
-        return {}
+        return {
+            "score": self._board.score,
+        }
 
     def reset(self, seed=None, options={}):
         """Start a new game. Returns the first observation and its
