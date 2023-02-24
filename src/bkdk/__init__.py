@@ -2,6 +2,8 @@ import warnings
 
 from gymnasium.envs.registration import register as _gym_env_register
 
+from .tinyscreen import TinyScreen
+
 __version__ = "0.0.3.dev"
 
 _gym_env_register(
