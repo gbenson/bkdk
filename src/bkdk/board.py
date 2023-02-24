@@ -67,17 +67,18 @@ class Board:
 
     def can_place_at(self, rowcol, shape):
         """Return True if shape may be placed on the board with its
-        top-left corner at rowcol, False otherwise.
-        """
+        top-left corner at rowcol, False otherwise."""
+        if any(d < 0 for d in rowcol):
+            return False
+        return self._can_place_at(rowcol, shape)
+
+    def _can_place_at(self, rowcol, shape):
         # Board.can_place_at is second only to net.activate in the
         # profile, in terms of where the processor is spending its
-        # time.  Uncommenting the following check adds 50% to our
-        # time taken, with negligable benefit since the NN doesn't
-        # have the ability to specify a negative position, so, we
-        # leave it out.
-        #
-        # if any(d < 0 for d in rowcol):
-        #     return False
+        # time, and the negative coordinate check in can_place_at
+        # comprises approximately 1/3 of its time taken.  Calling
+        # this method over can_place_at means can_place can avoid
+        # the expensive check.
         try:
             return not any(cell.is_set
                            for cell in self._cells_beneath(rowcol,
@@ -88,7 +89,7 @@ class Board:
     def can_place(self, shape):
         """Return True if shape may be placed somewhere on the board,
         False otherwise."""
-        if any(self.can_place_at(cell.rowcol, shape)
+        if any(self._can_place_at(cell.rowcol, shape)
                for cell in self.cells):
             return True
         return False
