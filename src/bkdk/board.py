@@ -40,6 +40,7 @@ class Board:
         self.columns = tuple(map(Grouping, zip(*self.rows)))
         self.cells = sum(self.rows, start=())
         self.boxes = self._init_boxes()
+        self.score = 0
         self._new_choices()
 
     def _init_boxes(self):
@@ -112,8 +113,18 @@ class Board:
             return 0
         if not self.can_place_at(rowcol, shape):
             return 0
+        saved_score = self.score
+
+        # Place the shape on the board
         self.place_at(rowcol, shape)
+        self.score += shape.score
         self.choices[choice] = None
+
+        # Resolve completed groupings
+        self.score += len(self.resolve()) * 9
+
+        # Update the choices for the next round
         if all(c is None for c in self.choices):
             self._new_choices()
-        return shape.score + len(self.resolve()) * 9
+
+        return self.score - saved_score
