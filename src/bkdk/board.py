@@ -62,7 +62,7 @@ class Board:
         """Return a generator that yields the board cells that would
         become set were shape to be placed at rowcol."""
         place_row, place_col = rowcol
-        for row, col in shape.set_cells:
+        for row, col in shape.cells:
             yield self.rows[place_row + row][place_col + col]
 
     def can_place_at(self, rowcol, shape):

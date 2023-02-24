@@ -12,7 +12,7 @@ class Shape:
         self.rows = tuple(tuple(int(c == "x")
                                 for c in row)
                           for row in code.split("_"))
-        self.set_cells = sum(
+        self.cells = sum(
             (tuple((row, col)
                    for col, is_set in enumerate(cells)
                    if is_set)
@@ -27,7 +27,7 @@ class Shape:
 
     @property
     def score(self):
-        return len(self.set_cells)
+        return len(self.cells)
 
     def __str__(self):
         return (f'<{__name__}.{self.__class__.__name__}'
