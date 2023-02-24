@@ -18,16 +18,13 @@ class Shape:
                    if is_set)
              for row, cells in enumerate(self.rows)),
             start=())
+        self.num_cells = len(self.cells)
 
     @property
     def code(self):
         return "_".join("".join("-x"[c]
                                 for c in row)
                         for row in self.rows)
-
-    @property
-    def score(self):
-        return len(self.cells)
 
     def __str__(self):
         return (f'<{__name__}.{self.__class__.__name__}'

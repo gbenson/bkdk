@@ -125,4 +125,4 @@ class Board:
         self.choices[choice] = None
         if all(c is None for c in self.choices):
             self._new_choices()
-        return shape.score + self.resolve() * 9
+        return shape.num_cells + self.resolve() * 9
