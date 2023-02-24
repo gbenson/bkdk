@@ -2,8 +2,6 @@ import warnings
 
 from gymnasium.envs.registration import register as _gym_env_register
 
-from .board import Board
-
 __version__ = "0.0.3.dev"
 
 _gym_env_register(

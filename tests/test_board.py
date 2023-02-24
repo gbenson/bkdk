@@ -1,7 +1,7 @@
 import copy
 import pytest
 import random
-from bkdk import Board
+from bkdk.board import Board
 from bkdk.shapes import Shape
 
 
