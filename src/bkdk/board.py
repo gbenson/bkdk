@@ -130,7 +130,7 @@ class Board:
         self.choices[choice] = None
 
         # Resolve completed groupings
-        self.score += self.resolve() * 9
+        self.score += self.resolve() * 18
 
         # Update the choices for the next round
         if all(c is None for c in self.choices):
