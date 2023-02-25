@@ -1,46 +1,29 @@
 import random
 import numpy as np
+from .bitmap import Bitmap
 
 
-class Shape:
+class Shape(Bitmap):
     def __init__(self, code=None):
-        if code is not None:
-            self._init_from_code(code)
-            assert self.code == code
-
-    def _init_from_code(self, code):
-        self.rows = tuple(tuple(int(c == "x")
-                                for c in row)
-                          for row in code.split("_"))
-        self.cells = sum(
-            (tuple((row, col)
-                   for col, is_set in enumerate(cells)
-                   if is_set)
-             for row, cells in enumerate(self.rows)),
-            start=())
-        self.num_cells = len(self.cells)
+        super().__init__(value=[[cell == "x"
+                                 for cell in row]
+                                for row in code.split("_")])
+        assert self.code == code
 
     @property
     def code(self):
-        return "_".join("".join("-x"[c]
-                                for c in row)
-                        for row in self.rows)
-
-    def __str__(self):
-        return (f'<{__name__}.{self.__class__.__name__}'
-                f' code="{self.code}">')
+        return "_".join("".join("-x"[cell]
+                                for cell in row)
+                        for row in self.tolist())
 
     @property
-    def num_rows(self):
-        return len(self.rows)
-
-    @property
-    def num_columns(self):
-        return len(self.rows[0])
-
-    @property
-    def size(self):
-        return self.num_rows, self.num_columns
+    def _deprecated_cells(self):
+        return sum(
+             (tuple((row, col)
+                    for col, is_set in enumerate(cells)
+                    if is_set)
+              for row, cells in enumerate(self.tolist())),
+             start=())
 
     def mirror(self):
         return Shape("_".join("".join(reversed(col))
@@ -55,7 +38,7 @@ class Shape:
         self._np_padded = np.asarray(
             (self._pad_rows(
                 (self._pad_row(row, max_columns)
-                 for row in self.rows),
+                 for row in self.tolist()),
                 max_rows)),
             dtype=np.uint8)
 
@@ -150,7 +133,7 @@ def random_shape(_random=None):
     return _random.choice(ALL_SHAPES)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     for i, shape in enumerate(ALL_SHAPES):
         if i != 0:
             print()

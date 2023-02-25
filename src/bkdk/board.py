@@ -63,7 +63,7 @@ class Board:
         """Return a generator that yields the board cells that would
         become set were shape to be placed at rowcol."""
         place_row, place_col = rowcol
-        for row, col in shape.cells:
+        for row, col in shape._deprecated_cells:
             yield self.rows[place_row + row][place_col + col]
 
     def can_place_at(self, rowcol, shape):
@@ -126,7 +126,7 @@ class Board:
 
         # Place the shape on the board
         self.place_at(rowcol, shape)
-        self.score += shape.num_cells
+        self.score += len(shape._deprecated_cells)
         self.choices[choice] = None
 
         # Resolve completed groupings
