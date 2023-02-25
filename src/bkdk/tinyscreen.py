@@ -1,5 +1,6 @@
 import gymnasium as gym
 import numpy as np
+import time
 
 from gymnasium import spaces
 
@@ -129,6 +130,54 @@ class TinyScreen(gym.ObservationWrapper):
         if getattr(self, "_window", None) is not None:
             import pygame
             pygame.quit()
+
+
+def profile(run_length_seconds=5, render_mode=None):
+    """Profile everything so far: Board, Shape, Env and TinyScreen."""
+    env = gym.make("bkdk/BKDK-v0", render_mode=render_mode)
+    env = TinyScreen(env)
+
+    # Limit how often we read the clock
+    frames_per_chunk = env.metadata["render_fps"] // 5
+    if env.render_mode != "human":
+        frames_per_chunk *= 10
+    if env.render_mode is None:
+        frames_per_chunk *= 10
+
+    env.reset(seed=186283)
+    needs_reset = False
+    total_frames = 0
+    start_time = time.perf_counter()
+    limit_time = start_time + run_length_seconds
+
+    while (end_time := time.perf_counter()) < limit_time:
+        for _ in range(frames_per_chunk):
+            if needs_reset:
+                env.reset()
+                needs_reset = False
+            else:
+                needs_reset = _profile_oneframe(env)
+            total_frames += 1
+
+    total_time = end_time - start_time
+    framerate = total_frames / total_time
+    print(f"{framerate:.0f} fps (render_mode = {env.render_mode})")
+
+    env.close()
+
+
+def _profile_oneframe(env):
+    board = env.unwrapped._board
+    for choice, shape in enumerate(board.choices):
+        if shape is None:
+            continue
+        for row in range(9):
+            for column in range(9):
+                if not board._can_place_at((row, column), shape):
+                    continue
+                action = choice, row, column
+                terminated, truncated = env.step(action)[2:4]
+                return terminated or truncated
 
 
 def main():

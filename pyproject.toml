@@ -11,6 +11,7 @@ dynamic = ["version"]
 
 [project.scripts]
 evolve = "bkdk.evolve:main"
+profile = "bkdk.tinyscreen:profile"
 
 [build-system]
 requires = ["setuptools>=61.0"]
