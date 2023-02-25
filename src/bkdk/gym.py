@@ -7,6 +7,12 @@ from .board import Board
 
 
 class Env(gym.Env):
+
+    metadata = {
+        "render_modes": ["human", "rgb_array"],
+        "render_fps": 4,
+    }
+
     def __init__(self, render_mode=None):
         # XXX fetch these from somewhere... bkdk.Board?
         self.board_size = 9
@@ -24,6 +30,8 @@ class Env(gym.Env):
 
         # An integer, encoded as per self.step.__doc__
         self.action_space = spaces.Discrete(self.board_size**2 * num_choices)
+
+        self.render_mode = render_mode
 
     @property
     def _observation(self):
