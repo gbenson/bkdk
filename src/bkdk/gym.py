@@ -10,7 +10,7 @@ class Env(gym.Env):
 
     metadata = {
         "render_modes": ["human", "rgb_array"],
-        "render_fps": 4,
+        "render_fps": 60,
     }
 
     def __init__(self, render_mode=None):
