@@ -7,6 +7,12 @@ from .board import Board
 
 
 class Env(gym.Env):
+
+    metadata = {
+        "render_modes": ["human", "rgb_array"],
+        "render_fps": 4,
+    }
+
     def __init__(self, render_mode=None):
         # XXX fetch these from somewhere... bkdk.Board?
         self.board_size = 9
@@ -27,6 +33,8 @@ class Env(gym.Env):
 
         self._empty_shape = type("EmptyShape", (), {})()
         self._empty_shape._np_padded = None
+
+        self.render_mode = render_mode
 
     @property
     def _observation(self):
