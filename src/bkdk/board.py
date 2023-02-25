@@ -1,118 +1,55 @@
-from dataclasses import dataclass
+from .bitmap import Bitmap
 from .shapes import random_shape
 
 
-@dataclass
-class Cell:
-    rowcol: tuple[int, int]
-    is_set: bool = False
-
-    def set(self):
-        self.is_set = True
-
-    def clear(self):
-        self.is_set = False
-
-    def __str__(self):
-        return f"Cell({self.rowcol}, is_set={self.is_set})"
-
-
-class Grouping(tuple):
-    """One row, column, or box."""
-    @property
-    def is_complete(self):
-        return all(cell.is_set for cell in self)
-
-    def clear(self):
-        for cell in self:
-            cell.clear()
-
-    def __str__(self):
-        return "".join(".#"[cell.is_set] for cell in self)
-
-
-class Board:
+class Board(Bitmap):
     def __init__(self, random_number_generator=None):
+        super().__init__(size=(9, 9))
         self._rng = random_number_generator
-        self.rows = tuple(Grouping(Cell((row_index, column_index))
-                                   for column_index in range(9))
-                          for row_index in range(9))
-        self.columns = tuple(map(Grouping, zip(*self.rows)))
-        self.cells = sum(self.rows, start=())
-        self.boxes = self._init_boxes()
         self.score = 0
         self._new_choices()
-
-    def _init_boxes(self):
-        boxes = [[] for _ in range(9)]
-        for cell in self.cells:
-            row_index, column_index = cell.rowcol
-            box_index = (row_index // 3) * 3 + column_index // 3
-            boxes[box_index].append(cell)
-        return tuple(Grouping(box) for box in boxes)
 
     def _new_choices(self):
         self.choices = [random_shape(self._rng) for _ in range(3)]
 
-    def __str__(self):
-        prefix = f"{self.__class__.__name__}["
-        sep = f"\n{' ' * len(prefix)}"
-        return f"{prefix}{sep.join(str(row) for row in self.rows)}]"
-
-    def _cells_beneath(self, rowcol, shape):
-        """Return a generator that yields the board cells that would
-        become set were shape to be placed at rowcol."""
-        place_row, place_col = rowcol
-        for row, col in shape._deprecated_cells:
-            yield self.rows[place_row + row][place_col + col]
-
-    def can_place_at(self, rowcol, shape):
-        """Return True if shape may be placed on the board with its
-        top-left corner at rowcol, False otherwise."""
-        if any(d < 0 for d in rowcol):
-            return False
-        return self._can_place_at(rowcol, shape)
-
-    def _can_place_at(self, rowcol, shape):
-        # Board.can_place_at is second only to net.activate in the
-        # profile, in terms of where the processor is spending its
-        # time, and the negative coordinate check in can_place_at
-        # comprises approximately 1/3 of its time taken.  Calling
-        # this method over can_place_at means can_place can avoid
-        # the expensive check.
-        try:
-            return not any(cell.is_set
-                           for cell in self._cells_beneath(rowcol,
-                                                           shape))
-        except IndexError:
-            return False
-
-    def can_place(self, shape):
-        """Return True if shape may be placed somewhere on the board,
-        False otherwise."""
-        if any(self._can_place_at(cell.rowcol, shape)
-               for cell in self.cells):
-            return True
-        return False
-
-    def place_at(self, rowcol, shape):
-        """Place shape on the board, such that the top left corner of
-        the shape is located at rowcol."""
-        for cell in self._cells_beneath(rowcol, shape):
-            cell.set()
-
     def resolve(self):
         """Resolve any solved sections, returning the number of
         sections cleared."""
-        completed = sum(
-            ([grouping
-              for grouping in groupings
-              if grouping.is_complete]
-             for groupings in (self.rows, self.columns, self.boxes)),
-            start=[])
-        for grouping in completed:
-            grouping.clear()
-        return len(completed)
+        full_rows = set()
+        full_cols = rowmask = 0x1FF
+        full_boxes = [0x1FF] * 3
+        for row_index, row in enumerate(self.rows):
+            if row == rowmask:
+                full_rows.add(row_index)
+            full_cols &= row
+            full_boxes[row_index // 3] &= row
+
+        # Count and clear completed lines
+        num_full_rows = len(full_rows)
+        num_full_cols = bin(full_cols).count("1")
+
+        nonfull_mask = ~full_cols
+        for row_index in range(len(self.rows)):
+            if row_index in full_rows:
+                self.rows[row_index] = 0
+                continue
+            self.rows[row_index] &= nonfull_mask
+
+        # Count and clear completed boxes
+        num_full_boxes = 0
+        for box_row_index, box_row in enumerate(full_boxes):
+            full_boxes_mask = 0
+            for box_mask in (0x1C0, 0x38, 0x7):
+                if (box_row & box_mask) == box_mask:
+                    num_full_boxes += 1
+                    full_boxes_mask |= box_mask
+            if full_boxes_mask:
+                nonfull_mask = ~full_boxes_mask
+                box_row_index *= 3
+                for i in range(3):
+                    self.rows[box_row_index + i] &= nonfull_mask
+
+        return num_full_rows + num_full_cols + num_full_boxes
 
     def one_move(self, choice, rowcol):
         """Perform one move of the game.  Returns the points resulting

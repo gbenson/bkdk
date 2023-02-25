@@ -39,9 +39,7 @@ class Env(gym.Env):
     @property
     def _observation(self):
         return {
-            "board": np.asarray([[int(cell.is_set) for cell in row]
-                                 for row in self._board.rows],
-                                dtype=np.uint8),
+            "board": np.asarray(self._board.tolist(), dtype=np.uint8),
             "choices": np.asarray(
                 [(shape or self._empty_shape)._np_padded
                  for shape in self._board.choices],
