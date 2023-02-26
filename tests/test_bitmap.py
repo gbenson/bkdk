@@ -179,3 +179,20 @@ def test_place_at_blank_onto_nonblank():
     assert a.rows == saved_a_rows_data
     assert b.rows is saved_b_rows_list
     assert b.rows == saved_b_rows_data
+
+
+@pytest.mark.parametrize(
+    "rowcol,expect_set",
+    (((0, 0), 2),
+     ((0, 1), 3),
+     ((1, 0), 1),
+     ((1, 1), 3),
+     ))
+def test_num_set_bits_under(rowcol, expect_set):
+    a = Bitmap(value=((1, 1, 1),
+                      (0, 0, 1),
+                      (0, 1, 1)))
+
+    b = Bitmap(value=((1, 1),
+                      (1, 1)))
+    assert a._num_set_bits_under(rowcol, b) == expect_set

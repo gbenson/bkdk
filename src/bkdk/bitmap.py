@@ -77,6 +77,19 @@ class Bitmap:
         for i, o_row in enumerate(other.rows):
             self.rows[i + row] |= (o_row << col)
 
+    def _num_set_bits_under(self, rowcol, other):
+        """Count the number of set bits in self under set bits
+        in other, when other is located over rowcol on self.
+        Prefixed with underscore because it doesn't check for
+        the placed shape extending outside of self's borders.
+        """
+        row, col = rowcol
+        total = 0
+        for i, o_row in enumerate(other.rows):
+            masked = self.rows[i + row] & (o_row << col)
+            total += self._num_set_bits_in(masked)
+        return total
+
     @classmethod
     def _num_set_bits_in(cls, x):
         """Return the number of set bits in x."""
