@@ -142,6 +142,47 @@ def test_initial_choices():
     assert board.choices[2].code == "xx"
 
 
+def test_one_move_placement_allowed():
+    """one_move allows valid placements."""
+    random.seed(23)
+    board = Board()
+    assert board.score == 0
+    assert board.one_move(1, (2, 2)) == 4
+    assert board.score == 4
+    assert board.tolist() == [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+
+def test_one_move_choice_used_up():
+    """one_move checks for used-up choices."""
+    random.seed(23)
+    board = Board()
+    assert board.choices[1] is not None
+    board.one_move(1, (3, 2))
+    assert board.choices[1] is None
+    assert board.score == 4
+    assert board.one_move(1, (2, 2)) == 0
+    assert board.score == 4
+    assert board.tolist() == [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+
 def test_one_move_placement_denied():
     """one_move disallows illegal placements."""
     random.seed(23)
