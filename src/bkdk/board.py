@@ -26,7 +26,7 @@ class Board(Bitmap):
 
         # Count and clear completed lines
         num_full_rows = len(full_rows)
-        num_full_cols = bin(full_cols).count("1")
+        num_full_cols = self._num_set_bits_in(full_cols)
 
         nonfull_mask = ~full_cols
         for row_index in range(len(self.rows)):

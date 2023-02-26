@@ -76,3 +76,8 @@ class Bitmap:
         row, col = rowcol
         for i, o_row in enumerate(other.rows):
             self.rows[i + row] |= (o_row << col)
+
+    @classmethod
+    def _num_set_bits_in(cls, x):
+        """Return the number of set bits in x."""
+        return bin(x).count("1")
