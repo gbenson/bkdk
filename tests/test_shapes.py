@@ -84,28 +84,6 @@ def test_finalized_padding(input_code, padded_code):
 
 
 @pytest.mark.parametrize(
-    "input_code, expected_cells",
-    (("x",
-      ((0, 0),)),
-     ("xx",
-      ((0, 0), (0, 1))),
-     ("x_x",
-      ((0, 0), (1, 0))),
-     ("x-_-x",
-      ((0, 0), (1, 1))),
-     ("-x_x-",
-      ((0, 1), (1, 0))),
-     ("x-_xx",
-      ((0, 0), (1, 0), (1, 1))),
-     ("--x_--x_xxx",
-      ((0, 2), (1, 2), (2, 0), (2, 1), (2, 2))),
-     ))
-def test_cells(input_code, expected_cells):
-    """Shape.cells is an sorted tuple of the shape's set cells."""
-    assert Shape(code=input_code)._deprecated_cells == expected_cells
-
-
-@pytest.mark.parametrize(
     "input_code, expected_size",
     (("x", (1, 1)),
      ("xx", (1, 2)),

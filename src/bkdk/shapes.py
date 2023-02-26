@@ -16,15 +16,6 @@ class Shape(Bitmap):
                                 for cell in row)
                         for row in self.tolist())
 
-    @property
-    def _deprecated_cells(self):
-        return sum(
-             (tuple((row, col)
-                    for col, is_set in enumerate(cells)
-                    if is_set)
-              for row, cells in enumerate(self.tolist())),
-             start=())
-
     def mirror(self):
         return Shape("_".join("".join(reversed(col))
                               for col in self.code.split("_")))
