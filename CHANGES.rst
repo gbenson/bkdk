@@ -14,6 +14,7 @@ Unreleased
   the game's current score.
 - A new ``TinyScreen`` wrapper allows the game to be viewed as though
   on a tiny (19 x 19 pixel) 1-bit screen.
+- The score calculation now more closely matches the original game.
 
 
 Version 0.0.2

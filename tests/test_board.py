@@ -2,7 +2,7 @@ import copy
 import pytest
 import random
 from bkdk.board import Board
-from bkdk.shapes import Shape
+from bkdk.shapes import Shape, ALL_SHAPES
 
 
 def test_boards_start_blank():
@@ -142,6 +142,26 @@ def test_initial_choices():
     assert board.choices[2].code == "xx"
 
 
+def test_one_move_placement_denied():
+    """one_move disallows illegal placements."""
+    random.seed(23)
+    board = Board()
+    board.place_at((1, 4), Shape(code="x_x_x_x"))
+    assert board.score == 0
+    assert board.one_move(1, (2, 2)) == 0
+    assert board.score == 0
+    assert board.tolist() == [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+
 @pytest.mark.parametrize(
     "rowcol, shape",
     (((3, 0), "x" * 9),
@@ -177,3 +197,74 @@ def test_offset_nonresolution(rowcol, shape):
     saved_rows = copy.copy(board.rows)
     assert board.resolve() == 0
     assert board.rows == saved_rows
+
+
+@pytest.fixture
+def real_game_1():
+    board = Board()
+    board.choices = [shape
+                     for shape in ALL_SHAPES
+                     if shape.code in ("x--_x--_xxx",
+                                       "xxx",
+                                       "-x_-x_xx")]
+    return board
+
+
+def test_score_no_completion_1(real_game_1):
+    """A placed shape that doesn't complete groups scores the number
+    of cells it covers (test 1 of 2)."""
+    board = real_game_1
+    assert board.score == 0
+    assert board.one_move(2, (6, 0)) == 5
+    assert board.score == 5
+    assert board.tolist() == [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0, 0, 0]]
+
+
+def test_score_no_completion_2(real_game_1):
+    """A placed shape that doesn't complete groups scores the number
+    of cells it covers (test 2 of 2)."""
+    board = real_game_1
+    board.one_move(2, (6, 0))
+    assert board.score == 5
+    assert board.one_move(0, (7, 1)) == 3
+    assert board.score == 8
+    assert board.tolist() == [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 1, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0, 0, 0]]
+
+
+def test_score_with_completion(real_game_1):
+    """A placed shape that completes a group scores the completion
+    score and cells that don't get cleared only."""
+    board = real_game_1
+    board.one_move(2, (6, 0))
+    board.one_move(0, (7, 1))
+    assert board.score == 8
+    assert board.one_move(1, (4, 1)) == 20
+    assert board.score == 28
+    assert board.tolist() == [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0]]

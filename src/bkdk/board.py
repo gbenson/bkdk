@@ -57,19 +57,20 @@ class Board(Bitmap):
         shape = self.choices[choice]
         if shape is None:
             return 0
-        if not self.can_place_at(rowcol, shape):
-            return 0
-        saved_score = self.score
 
         # Place the shape on the board
-        self.place_at(rowcol, shape)
-        self.score += len(shape._deprecated_cells)
-        self.choices[choice] = None
+        try:
+            self.place_at(rowcol, shape)
+        except ValueError:
+            return 0
 
-        # Resolve completed groupings
+        # Resolve completed groupings and update score
+        saved_score = self.score
         self.score += self.resolve() * 18
+        self.score += self._num_set_bits_under(rowcol, shape)
 
         # Update the choices for the next round
+        self.choices[choice] = None
         if all(c is None for c in self.choices):
             self._new_choices()
 
