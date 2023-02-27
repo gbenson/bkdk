@@ -184,6 +184,9 @@ while True:  # Run until solved
             # Log details
             template = "running reward: {:.2f} at episode {}, frame count {}"
             print(template.format(running_reward, episode_count, frame_count))
+            model_target.save(
+                f"/home/gary/projects/bkdk/tf-checkpoint-{frame_count}",
+                overwrite=True)
 
         # Limit the state and reward history
         if len(rewards_history) > max_memory_length:
