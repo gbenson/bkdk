@@ -42,17 +42,14 @@ is chosen by selecting the larger of the four Q-values predicted in the output l
 
 """
 
-num_actions = 9*9*3  # XXX get from env
+num_actions = env.action_space.n
 
 
 def create_q_model():
-    inputs = layers.Input(
-        shape=(
-            19,
-            19,
-            1,
-        ) # XXX get from env
-    )
+    input_shape = env.observation_space.shape
+    if len(input_shape) == 2:
+        input_shape += (1,)
+    inputs = layers.Input(shape=input_shape)
 
     # Convolutions on the frames on the screen
     layer1 = layers.Conv2D(32, 3, strides=1, activation="relu")(inputs)
