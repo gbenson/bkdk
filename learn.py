@@ -18,7 +18,9 @@ epsilon_interval = (
 batch_size = 32  # Size of batch taken from replay buffer
 max_steps_per_episode = 10000
 
-env = TinyScreen(gym.make("bkdk/BKDK-v0", render_mode="human"))
+env = TinyScreen(gym.make("bkdk/BKDK-v0"))
+env._window = None
+env._clock = None
 env.reset(seed=seed)
 
 """
@@ -165,6 +167,7 @@ while True:  # Run until solved
             # Create a mask so we only calculate loss on the updated Q-values
             masks = tf.one_hot(action_sample, num_actions)
 
+            env._render_pygame("human")
             with tf.GradientTape() as tape:
                 # Train the model on the states and updated Q-values
                 q_values = model(state_sample)
