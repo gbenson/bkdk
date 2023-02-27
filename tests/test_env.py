@@ -151,6 +151,9 @@ def test_initial_score(initial_info):
     "action",
     ((2, 3, 4),  # shape 2, row 3, column 4
      193,        # ditto, but flattened into an int
+     np.int64(193),  # ditto, but wrapped in NumPy types
+     np.uint8(193),
+     np.ushort(193),
      ))
 @pytest.mark.filterwarnings(f"ignore:{_GYMNASIUM_269}")
 def test_step(env, action):

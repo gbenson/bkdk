@@ -73,11 +73,11 @@ class Env(gym.Env):
         or the same encoded as as an integer via:
         `column + row*BOARD_SIZE + choice_index*BOARD_SIZE**2`.
         """
-        if isinstance(action, type(0)):
+        try:
+            choice, row, column = action
+        except TypeError:
             choice_row, column = divmod(action, self.board_size)
             choice, row = divmod(choice_row, self.board_size)
-        else:
-            choice, row, column = action
 
         reward = self._board.one_move(choice, (row, column))
         terminated = not any(self._board.can_place(shape)
