@@ -30,6 +30,6 @@ Install in editable mode::
 
  pip install -e .
 
-Evolve a network::
+Train a network::
 
- evolve neat.cfg
+ python learn.py
