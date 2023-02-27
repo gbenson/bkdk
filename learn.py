@@ -1,72 +1,13 @@
-"""
-Title: Deep Q-Learning for Atari Breakout
-Author: [Jacob Chapman](https://twitter.com/jacoblchapman) and [Mathias Lechner](https://twitter.com/MLech20)
-Date created: 2020/05/23
-Last modified: 2020/06/17
-Description: Play Atari Breakout with a Deep Q-Network.
-Accelerator: NONE
-"""
-"""
-## Introduction
-
-This script shows an implementation of Deep Q-Learning on the
-`BreakoutNoFrameskip-v4` environment.
-
-This example requires the following dependencies: `baselines`, `atari-py`, `rows`.
-They can be installed via:
-
-```
-git clone https://github.com/openai/baselines.git
-cd baselines
-pip install -e .
-git clone https://github.com/openai/atari-py
-wget http://www.atarimania.com/roms/Roms.rar
-unrar x Roms.rar .
-python -m atari_py.import_roms .
-```
-
-### Deep Q-Learning
-
-As an agent takes actions and moves through an environment, it learns to map
-the observed state of the environment to an action. An agent will choose an action
-in a given state based on a "Q-value", which is a weighted reward based on the
-expected highest long-term reward. A Q-Learning Agent learns to perform its
-task such that the recommended action maximizes the potential future rewards.
-This method is considered an "Off-Policy" method,
-meaning its Q values are updated assuming that the best action was chosen, even
-if the best action was not chosen.
-
-### Atari Breakout
-
-In this environment, a board moves along the bottom of the screen returning a ball that
-will destroy blocks at the top of the screen.
-The aim of the game is to remove all blocks and breakout of the
-level. The agent must learn to control the board by moving left and right, returning the
-ball and removing all the blocks without the ball passing the board.
-
-### Note
-
-The Deepmind paper trained for "a total of 50 million frames (that is, around 38 days of
-game experience in total)". However this script will give good results at around 10
-million frames which are processed in less than 24 hours on a modern machine.
-
-### References
-
-- [Q-Learning](https://link.springer.com/content/pdf/10.1007/BF00992698.pdf)
-- [Deep Q-Learning](https://deepmind.com/research/publications/human-level-control-through-deep-reinforcement-learning)
-"""
-"""
-## Setup
-"""
-
-from baselines.common.atari_wrappers import make_atari, wrap_deepmind
+import gymnasium as gym
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
+from bkdk import TinyScreen
+
 
 # Configuration paramaters for the whole setup
-seed = 42
+seed = 186283
 gamma = 0.99  # Discount factor for past rewards
 epsilon = 1.0  # Epsilon greedy parameter
 epsilon_min = 0.1  # Minimum epsilon greedy parameter
@@ -77,11 +18,8 @@ epsilon_interval = (
 batch_size = 32  # Size of batch taken from replay buffer
 max_steps_per_episode = 10000
 
-# Use the Baseline Atari environment because of Deepmind helper functions
-env = make_atari("BreakoutNoFrameskip-v4")
-# Warp the frames, grey scale, stake four frame and scale to smaller ratio
-env = wrap_deepmind(env, frame_stack=True, scale=True)
-env.seed(seed)
+env = TinyScreen(gym.make("bkdk/BKDK-v0", render_mode="human"))
+env.reset(seed=seed)
 
 """
 ## Implement the Deep Q-Network
@@ -93,22 +31,21 @@ is chosen by selecting the larger of the four Q-values predicted in the output l
 
 """
 
-num_actions = 4
+num_actions = 9*9*3  # XXX get from env
 
 
 def create_q_model():
-    # Network defined by the Deepmind paper
     inputs = layers.Input(
         shape=(
-            84,
-            84,
-            4,
-        )
+            19,
+            19,
+            1,
+        ) # XXX get from env
     )
 
     # Convolutions on the frames on the screen
-    layer1 = layers.Conv2D(32, 8, strides=4, activation="relu")(inputs)
-    layer2 = layers.Conv2D(64, 4, strides=2, activation="relu")(layer1)
+    layer1 = layers.Conv2D(32, 3, strides=1, activation="relu")(inputs)
+    layer2 = layers.Conv2D(64, 3, strides=1, activation="relu")(layer1)
     layer3 = layers.Conv2D(64, 3, strides=1, activation="relu")(layer2)
 
     layer4 = layers.Flatten()(layer3)
@@ -160,12 +97,11 @@ update_target_network = 10000
 loss_function = keras.losses.Huber()
 
 while True:  # Run until solved
-    state = np.array(env.reset())
+    state, _ = env.reset()
+    state = np.array(state)
     episode_reward = 0
 
     for timestep in range(1, max_steps_per_episode):
-        # env.render(); Adding this line would show the attempts
-        # of the agent in a pop up window.
         frame_count += 1
 
         # Use epsilon-greedy for exploration
@@ -186,7 +122,8 @@ while True:  # Run until solved
         epsilon = max(epsilon, epsilon_min)
 
         # Apply the sampled action in our environment
-        state_next, reward, done, _ = env.step(action)
+        state_next, reward, terminated, truncated, _ = env.step(action)
+        done = terminated or truncated
         state_next = np.array(state_next)
 
         episode_reward += reward
@@ -267,18 +204,6 @@ while True:  # Run until solved
 
     episode_count += 1
 
-    if running_reward > 40:  # Condition to consider the task solved
+    if running_reward > 250:  # Condition to consider the task solved
         print("Solved at episode {}!".format(episode_count))
         break
-
-"""
-## Visualizations
-Before any training:
-![Imgur](https://i.imgur.com/rRxXF4H.gif)
-
-In early stages of training:
-![Imgur](https://i.imgur.com/X8ghdpL.gif)
-
-In later stages of training:
-![Imgur](https://i.imgur.com/Z1K6qBQ.gif)
-"""
