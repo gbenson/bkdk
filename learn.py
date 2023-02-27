@@ -1,6 +1,7 @@
 import gymnasium as gym
 import numpy as np
 import tensorflow as tf
+from glob import glob
 from tensorflow import keras
 from tensorflow.keras import layers
 from bkdk import TinyScreen
@@ -17,6 +18,14 @@ epsilon_interval = (
 )  # Rate at which to reduce chance of random action being taken
 batch_size = 32  # Size of batch taken from replay buffer
 max_steps_per_episode = 10000
+
+checkpoint_prefix = "/home/gary/projects/bkdk/tf-checkpoint-"
+restart_checkpoint = None
+checkpoints = glob(checkpoint_prefix + "*")
+if checkpoints:
+    checkpoints.sort()
+    restart_checkpoint = checkpoints.pop()
+del checkpoints
 
 env = TinyScreen(gym.make("bkdk/BKDK-v0"))
 env._window = None
@@ -64,7 +73,16 @@ model = create_q_model()
 # Build a target model for the prediction of future rewards.
 # The weights of a target model get updated every 10000 steps thus when the
 # loss between the Q-values is calculated the target Q-value is stable.
-model_target = create_q_model()
+if restart_checkpoint is None:
+    model_target = create_q_model()
+    frame_count = 0
+    assert False  # XXX don't restart!
+else:
+    frame_count = int(restart_checkpoint[len(checkpoint_prefix):])
+    print(f"Restarting at frame_count = {frame_count}")
+    model_target = keras.models.load_model(restart_checkpoint,
+                                           compile=False)
+    model.set_weights(model_target.get_weights())
 
 
 """
@@ -83,7 +101,6 @@ done_history = []
 episode_reward_history = []
 running_reward = 0
 episode_count = 0
-frame_count = 0
 # Number of frames to take random action and observe output
 epsilon_random_frames = 50000
 # Number of frames for exploration
@@ -188,7 +205,7 @@ while True:  # Run until solved
             template = "running reward: {:.2f} at episode {}, frame count {}"
             print(template.format(running_reward, episode_count, frame_count))
             model_target.save(
-                f"/home/gary/projects/bkdk/tf-checkpoint-{frame_count}",
+                f"{checkpoint_prefix}{frame_count}",
                 overwrite=True)
 
         # Limit the state and reward history
