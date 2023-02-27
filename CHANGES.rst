@@ -1,20 +1,22 @@
 Version 0.0.3
 -------------
 
-Unreleased
+Released 2023-02-26
 
 - Genome fitness is evaluated using a per-generation random seed,
   such that every member of a generation is evaluated using the same
   sequence of shapes.
 - ``evolve --profile`` sets and propagates the random seed to
   reduce spurious difference between profile runs.
-- ``Board.can_place_at`` is now three times faster.
 - Five missing shapes have been added.
 - The ``info`` returned by ``Env.step`` and ``Env.reset`` now includes
   the game's current score.
 - A new ``TinyScreen`` wrapper allows the game to be viewed as though
   on a tiny (19 x 19 pixel) 1-bit screen.
 - The score calculation now more closely matches the original game.
+- The game mechanics now run 80% faster than in the previous release
+  (the unrendered framerate increased from 3,650 fps to 6,535 fps on
+  my Chromebook).
 
 
 Version 0.0.2
