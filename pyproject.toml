@@ -2,6 +2,7 @@
 name = "bkdk"
 dependencies = [
     "gymnasium",
+    "intel-tensorflow",
     "numpy",
 ]
 dynamic = ["version"]
