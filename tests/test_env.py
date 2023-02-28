@@ -192,3 +192,61 @@ def test_step(env, action):
             dtype=np.uint8))
 
     assert info["score"] == 4
+
+
+@pytest.mark.parametrize(
+    "action",
+    ((0, 0, 0),
+     0,
+     np.int64(0),
+     ))
+@pytest.mark.filterwarnings(f"ignore:{_GYMNASIUM_269}")
+def test_is_valid_action_yes(env, action):
+    """is_valid_action works when the answer is True."""
+    env.reset(seed=23)
+    assert env.is_valid_action(action)
+
+
+@pytest.mark.parametrize(
+    "action",
+    ((0, -1, 0),
+     (0, 0, -1),
+     (1, 8, 0),
+     153,
+     (0, 0, 8),
+     8,
+     np.int64(8),
+     ))
+@pytest.mark.filterwarnings(f"ignore:{_GYMNASIUM_269}")
+def test_is_valid_action_oob(env, action):
+    """is_valid_action returns False if out of bounds"""
+    env.reset(seed=23)
+    assert not env.is_valid_action(action)
+
+
+@pytest.mark.parametrize(
+    "action",
+    ((0, 0, 0),
+     0,
+     np.int64(0),
+     ))
+@pytest.mark.filterwarnings(f"ignore:{_GYMNASIUM_269}")
+def test_is_valid_action_blocked(env, action):
+    """is_valid_action returns False when blocked."""
+    env.reset(seed=23)
+    env.step((1, 0, 0))
+    assert not env.is_valid_action(action)
+
+
+@pytest.mark.parametrize(
+    "action",
+    ((0, 0, 0),
+     0,
+     np.int64(0),
+     ))
+@pytest.mark.filterwarnings(f"ignore:{_GYMNASIUM_269}")
+def test_is_valid_action_used_up(env, action):
+    """is_valid_action returns False when used up."""
+    env.reset(seed=23)
+    env.step((0, 5, 5))
+    assert not env.is_valid_action(action)

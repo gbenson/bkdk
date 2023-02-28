@@ -89,3 +89,15 @@ class Env(gym.Env):
                              if shape is not None)
 
         return self._observation, reward, terminated, False, self._info
+
+    def is_valid_action(self, action):
+        """Returns True if action represents a valid placement,
+        False otherwise.
+        """
+        choice, row, column = self._decode_action(action)
+
+        shape = self._board.choices[choice]
+        if shape is None:
+            return False
+
+        return self._board.can_place_at((row, column), shape)
