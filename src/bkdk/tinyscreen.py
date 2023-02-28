@@ -189,6 +189,5 @@ def main():
     env = TinyScreen(env)
 
     observation, info = env.reset()
-    import time
     while True:
         time.sleep(1)
