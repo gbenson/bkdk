@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import gymnasium as gym
 from gymnasium.envs.registration import register as _gym_env_register
-from bkdk.tinyscreen import TinyScreen
+from bkdk import TinyScreen
 
 
 # Gymnasium's passive environment checker issues warnings about our

@@ -3,6 +3,6 @@ per-file-ignores =
     # __init__ exports names
     src/bkdk/__init__.py: F401
     # undefined name 'pygame'
-    src/bkdk/tinyscreen.py: F821
+    src/bkdk/ts/core.py: F821
     # temporarily imported from NEAT-python 0.92 xor example
     src/bkdk/visualize.py: E501
