@@ -117,6 +117,7 @@ while True:  # Run until solved
     state, _ = env.reset()
     state = np.array(state)
     episode_reward = 0
+    zero_reward_run = 0
 
     for timestep in range(1, max_steps_per_episode):
         frame_count += 1
@@ -125,6 +126,12 @@ while True:  # Run until solved
         if frame_count < epsilon_random_frames or epsilon > np.random.rand(1)[0]:
             # Take random action
             action = np.random.choice(num_actions)
+        elif zero_reward_run > num_actions:
+            # Choose a random *valid* action
+            valid_actions = [action
+                             for action in range(num_actions)
+                             if env.is_valid_action(action)]
+            action = np.random.choice(valid_actions)
         else:
             # Predict action Q-values
             # From environment state
@@ -144,6 +151,10 @@ while True:  # Run until solved
         state_next = np.array(state_next)
 
         episode_reward += reward
+        if reward == 0:
+            zero_reward_run += 1
+        else:
+            zero_reward_run = 0
 
         # Save actions and states in replay buffer
         action_history.append(action)
