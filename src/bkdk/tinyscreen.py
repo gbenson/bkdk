@@ -1,3 +1,4 @@
+import importlib
 import gymnasium as gym
 import numpy as np
 import time
@@ -83,8 +84,12 @@ class TinyScreen(gym.ObservationWrapper):
 
     CELLSIZE = 40
 
+    def _import_pygame(self, name="pygame"):
+        if name not in globals():
+            globals()[name] = importlib.import_module(name)
+
     def _render_pygame(self, mode):
-        import pygame
+        self._import_pygame()
 
         shape = self._screen.shape
         if self._window is None:
@@ -128,7 +133,6 @@ class TinyScreen(gym.ObservationWrapper):
 
     def close(self):
         if getattr(self, "_window", None) is not None:
-            import pygame
             pygame.quit()
 
 
