@@ -23,8 +23,9 @@ checkpoint_prefix = "/home/gary/projects/bkdk/tf-checkpoint-"
 restart_checkpoint = None
 checkpoints = glob(checkpoint_prefix + "*")
 if checkpoints:
+    checkpoints = [(int(c.rsplit("-", 1)[-1]), c) for c in checkpoints]
     checkpoints.sort()
-    restart_checkpoint = checkpoints.pop()
+    _, restart_checkpoint = checkpoints.pop()
 del checkpoints
 
 env = TinyScreen(gym.make("bkdk/BKDK-v0"))
