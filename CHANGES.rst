@@ -1,3 +1,18 @@
+Version 0.0.4
+-------------
+
+Released 2023-03-01
+
+- A modified version of the `Deep Q-Learning for Atari Breakout`_
+  code example from Keras was introduced as ``learn.py``.  It's not
+  yet able to learn well, I've been using the game score as a reward
+  function and that's totally unsuitable in so many ways.
+- The Apache-2.0 licence was added, matching the GitHub repository
+  containing the above file.
+- The project's dependencies have been updated to reflect the shift
+  from NEAT-Python to TensorFlow.
+
+
 Version 0.0.3
 -------------
 
@@ -41,3 +56,4 @@ Released 2023-02-19
 
 .. Links
 .. _Python profiler: https://docs.python.org/3/library/profile.html
+.. _Deep Q-Learning for Atari Breakout: https://keras.io/examples/rl/deep_q_network_breakout/
