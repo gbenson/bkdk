@@ -118,7 +118,7 @@ update_target_network = 10000
 loss_function = keras.losses.Huber()
 
 while True:  # Run until solved
-    state, _ = env.reset()
+    state, info = env.reset()
     state = np.array(state)
     episode_reward = 0
     zero_reward_run = 0
@@ -132,6 +132,7 @@ while True:  # Run until solved
             action = np.random.choice(num_actions)
         elif zero_reward_run > num_actions:
             # Choose a random *valid* action
+            print(f" breaking zero-reward run")
             valid_actions = [action
                              for action in range(num_actions)
                              if env.is_valid_action(action)]
@@ -150,8 +151,10 @@ while True:  # Run until solved
         epsilon = max(epsilon, epsilon_min)
 
         # Apply the sampled action in our environment
-        state_next, reward, terminated, truncated, _ = env.step(action)
+        state_next, reward, terminated, truncated, info = env.step(action)
         done = terminated or truncated
+        if done:
+            print(f" final score was {info['score']}")
         state_next = np.array(state_next)
 
         episode_reward += reward
