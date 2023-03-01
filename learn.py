@@ -1,9 +1,13 @@
 import gymnasium as gym
 import numpy as np
+import os
+import sys
 import tensorflow as tf
+
 from glob import glob
 from tensorflow import keras
 from tensorflow.keras import layers
+
 from bkdk import TinyScreen
 
 
@@ -216,6 +220,13 @@ while True:  # Run until solved
             model_target.save(
                 f"{checkpoint_prefix}{frame_count}",
                 overwrite=True)
+            # restart from checkpoint to work around memory leak
+            # XXX or is it just the huge buffers? FIXME!
+            sys.stdout.flush()
+            sys.stderr.flush()
+            os.execl(sys.executable,
+                     os.path.basename(sys.executable),
+                     *sys.argv)
 
         # Limit the state and reward history
         if len(rewards_history) > max_memory_length:
