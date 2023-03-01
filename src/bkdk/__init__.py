@@ -4,7 +4,7 @@ from gymnasium.envs.registration import register as _gym_env_register
 
 from .ts.core import TinyScreen
 
-__version__ = "0.0.4"
+__version__ = "0.0.5.dev"
 
 _gym_env_register(
     id="bkdk/BKDK-v0",
