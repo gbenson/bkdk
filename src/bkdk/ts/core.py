@@ -1,9 +1,10 @@
-import importlib
 import gymnasium as gym
 import numpy as np
 import time
 
 from gymnasium import spaces
+
+from .lights import Blinkenlights
 
 
 class TinyScreen(gym.ObservationWrapper):
@@ -42,10 +43,9 @@ class TinyScreen(gym.ObservationWrapper):
         self.observation_space = spaces.Box(
             low=0, high=1, dtype=np.uint8, shape=(19, 19))
 
-        # Rendering
-        if self.render_mode in ("human", "rgb_array"):
-            self._window = None
-            self._clock = None
+        if self.render_mode is not None:
+            self.render = Blinkenlights(self.render_mode,
+                                        self.metadata)
 
     def observation(self, obs):
         # Score area (19x1)
@@ -70,70 +70,18 @@ class TinyScreen(gym.ObservationWrapper):
                                    board_area,
                                    choices_area)),
                      start=(self._inter_area_pad,))
-        self._screen = np.concatenate(screen, axis=0)
+        screen = np.concatenate(screen, axis=0)
 
+        if self.render_mode is not None:
+            self.render._buf = screen
         if self.render_mode == "human":
             self.render()
 
-        return self._screen
-
-    def render(self):
-        if self.render_mode is None:
-            return
-        return self._render_pygame(self.render_mode)
-
-    CELLSIZE = 40
-
-    def _import_pygame(self, name="pygame"):
-        if name not in globals():
-            globals()[name] = importlib.import_module(name)
-
-    def _render_pygame(self, mode):
-        self._import_pygame()
-
-        shape = self._screen.shape
-        if self._window is None:
-            pygame.init()
-            window_size = [d * self.CELLSIZE for d in reversed(shape)]
-            if mode == "human":
-                pygame.display.set_caption("BKDK")
-                self._window = pygame.display.set_mode(window_size)
-            elif mode == "rgb_array":
-                self._window = pygame.Surface(window_size)
-
-        if self._clock is None:
-            self._clock = pygame.time.Clock()
-
-        for row in range(shape[0]):
-            y = row * self.CELLSIZE
-            for col in range(shape[1]):
-                x = col * self.CELLSIZE
-                is_set = self._screen[row][col]
-                color = (0, is_set * 255, 0)
-                rect = pygame.Rect((x, y,
-                                    self.CELLSIZE,
-                                    self.CELLSIZE))
-
-                pygame.draw.rect(self._window,
-                                 color,
-                                 rect,
-                                 border_radius=self.CELLSIZE//5)
-                pygame.draw.rect(self._window,
-                                 (0, 0, 112),
-                                 rect,
-                                 width=self.CELLSIZE//20,
-                                 border_radius=self.CELLSIZE//5)
-
-        if mode == "human":
-            pygame.display.update()
-            self._clock.tick(self.metadata["render_fps"])
-        elif mode == "rgb_array":
-            pixels = np.array(pygame.surfarray.pixels3d(self._window))
-            return np.transpose(pixels, axes=(1, 0, 2))
+        return screen
 
     def close(self):
-        if getattr(self, "_window", None) is not None:
-            pygame.quit()
+        if hasattr(self.render, "close"):
+            self.render.close()
 
 
 def profile(run_length_seconds=5, render_mode=None):
