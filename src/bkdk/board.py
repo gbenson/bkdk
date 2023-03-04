@@ -75,3 +75,14 @@ class Board(Bitmap):
             self._new_choices()
 
         return self.score - saved_score
+
+    @property
+    def valid_moves(self):
+        for choice, shape in enumerate(self.choices):
+            if shape is None:
+                continue
+            for row in range(self.num_rows):
+                for column in range(self.num_columns):
+                    rowcol = row, column
+                    if self._can_place_at(rowcol, shape):
+                        yield choice, rowcol

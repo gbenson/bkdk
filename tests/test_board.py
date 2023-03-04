@@ -309,3 +309,37 @@ def test_score_with_completion(real_game_1):
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+
+def test_initial_valid_moves():
+    """Most moves are valid on a blank board."""
+    random.seed(23)
+    valid_moves = list(Board().valid_moves)
+    assert len(valid_moves) == 182
+    assert (0, (5, 4)) in valid_moves
+    assert (1, (5, 4)) in valid_moves
+    assert (2, (5, 4)) in valid_moves
+
+
+def test_valid_moves_one_shape_down():
+    """Removing a choice removes its valid moves."""
+    random.seed(23)
+    board = Board()
+    board.choices[1] = None
+    valid_moves = list(board.valid_moves)
+    assert len(valid_moves) == 128
+    assert (0, (5, 4)) in valid_moves
+    assert (1, (5, 4)) not in valid_moves
+    assert (2, (5, 4)) in valid_moves
+
+
+def test_valid_moves_one_shape_placecd():
+    """Placing a shape reduces other shapes' valid moves."""
+    random.seed(23)
+    board = Board()
+    board.one_move(1, (6, 4))
+    valid_moves = list(board.valid_moves)
+    assert len(valid_moves) == 110
+    assert (0, (5, 4)) not in valid_moves
+    assert (1, (5, 4)) not in valid_moves
+    assert (2, (5, 4)) in valid_moves
