@@ -33,6 +33,14 @@ class Bitmap:
                  for i in range(self.num_columns)]
                 for row in self.rows]
 
+    def toint(self):
+        return self._bits_to_int(sum(self.tolist(), []))
+
+    @classmethod
+    def _bits_to_int(self, bits):
+        """Convert a sequence of 1s and 0s to an integer."""
+        return int("".join(map(str, bits)), 2)
+
     def __str__(self):
         return str(self.tolist()).replace("], ", "],\n ")
 

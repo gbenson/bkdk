@@ -195,3 +195,26 @@ def test_num_set_bits_under(rowcol, expect_set):
     b = Bitmap(value=((1, 1),
                       (1, 1)))
     assert a._num_set_bits_under(rowcol, b) == expect_set
+
+
+@pytest.mark.parametrize(
+    "bits, expect_int",
+    (([0], 0),
+     ((1, 0, 0, 1), 9),
+     ([1, 1, 1, 1], 15),
+     ([1, 0, 0, 0, 0], 16),
+     ([1]*25, 0x1ffffff),
+     ([1]*81, 0x1ffffffffffffffffffff),
+     ))
+def test_bits_to_int(bits, expect_int):
+    assert Bitmap._bits_to_int(bits) == expect_int
+
+
+def test_empty_bitmap_toint():
+    """An empty Bitmap's integer representation is 0."""
+    assert Bitmap((3, 4)).toint() == 0
+
+
+def test_nonempty_bitmap_toint():
+    """An empty Bitmap's integer representation is 0."""
+    assert Bitmap(value=[[0, 1, 1], [1, 1, 0]]).toint() == 0x1e
