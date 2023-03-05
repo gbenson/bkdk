@@ -1,4 +1,3 @@
-import copy
 import pytest
 import random
 from bkdk.board import Board
@@ -235,7 +234,7 @@ def test_offset_nonresolution(rowcol, shape):
     board = Board()
     board.place_at(rowcol, Shape(code=shape))
     print(board)
-    saved_rows = copy.copy(board.rows)
+    saved_rows = board.rows.copy()
     assert board.resolve() == 0
     assert board.rows == saved_rows
 

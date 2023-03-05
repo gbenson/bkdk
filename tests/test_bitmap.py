@@ -1,4 +1,3 @@
-import copy
 import pytest
 from bkdk.bitmap import Bitmap
 
@@ -145,9 +144,9 @@ def test_place_at_nonblank_onto_blank():
     assert b.rows != a.rows
 
     saved_a_rows_list = a.rows
-    saved_a_rows_data = copy.copy(a.rows)
+    saved_a_rows_data = a.rows.copy()
     saved_b_rows_list = b.rows
-    saved_b_rows_data = copy.copy(b.rows)
+    saved_b_rows_data = b.rows.copy()
 
     b.place_at((0, 0), a)
 
@@ -169,9 +168,9 @@ def test_place_at_blank_onto_nonblank():
     assert b.rows != a.rows
 
     saved_a_rows_list = a.rows
-    saved_a_rows_data = copy.copy(a.rows)
+    saved_a_rows_data = a.rows.copy()
     saved_b_rows_list = b.rows
-    saved_b_rows_data = copy.copy(b.rows)
+    saved_b_rows_data = b.rows.copy()
 
     a.place_at((0, 0), b)
 
