@@ -93,4 +93,5 @@ class Bitmap:
     @classmethod
     def _num_set_bits_in(cls, x):
         """Return the number of set bits in x."""
+        # XXX Replace with x.bit_count() if Python >= 3.10
         return bin(x).count("1")
