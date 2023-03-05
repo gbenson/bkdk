@@ -32,6 +32,7 @@ class Shape(Bitmap):
                  for row in self.tolist()),
                 max_rows)),
             dtype=np.uint8)
+        self.uid = self._bits_to_int(self._np_padded.flatten())
 
     def _pad_rows(self, rows, max_rows):
         rows = list(rows)

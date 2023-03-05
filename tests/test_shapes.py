@@ -97,3 +97,9 @@ def test_finalized_padding(input_code, padded_code):
 def test_size(input_code, expected_size):
     """Shape.size is the rows, columns of the shape."""
     assert Shape(code=input_code).size == expected_size
+
+
+def test_uids():
+    """Each shape has a unique integer uid."""
+    shapes = {shape.uid for shape in ALL_SHAPES}
+    assert len(shapes) == len(ALL_SHAPES)
