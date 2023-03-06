@@ -1,5 +1,5 @@
 from .bitmap import Bitmap
-from .shapes import random_shape
+from .shapes import ALL_SHAPES, random_shape
 
 
 class Board(Bitmap):
@@ -86,3 +86,13 @@ class Board(Bitmap):
                     rowcol = row, column
                     if self._can_place_at(rowcol, shape):
                         yield choice, rowcol
+
+    def can_place_any_shape(self):
+        """Return True if any shape may be placed on this board."""
+        # XXX could test a reduced set of shapes (e.g if we can place
+        # a horizontal line of 5 squares, we can place lines of 1-4
+        # squares also)
+        for shape in ALL_SHAPES:
+            if not self.can_place(shape):
+                return False
+        return True
