@@ -16,6 +16,21 @@ class Board(Bitmap):
     def _board_uid(self):
         return self.toint()
 
+    def _choices_uids(self):
+        return tuple(shape.uid if shape is not None
+                     else 0
+                     for shape in self.choices)
+
+    @property
+    def uid(self):
+        return (self.board_uid,) + self._choices_uids
+
+    @property
+    def euid(self):
+        return (self.board_uid,) + tuple(sorted(uid
+                                                for uid in self._choices_uids
+                                                if uid != 0))
+
     def resolve(self):
         """Resolve any solved sections, returning the number of
         sections cleared."""
