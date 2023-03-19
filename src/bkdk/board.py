@@ -3,8 +3,8 @@ from .shapes import ALL_SHAPES, random_shape
 
 
 class Board(Bitmap):
-    def __init__(self, random_number_generator=None):
-        super().__init__(size=(9, 9))
+    def __init__(self, random_number_generator=None, value=None):
+        super().__init__(size=(9, 9), value=value)
         self._rng = random_number_generator
         self.score = 0
         self._new_choices()
