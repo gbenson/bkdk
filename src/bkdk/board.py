@@ -1,3 +1,4 @@
+import copy
 from .bitmap import Bitmap
 from .shapes import ALL_SHAPES, random_shape
 
@@ -96,3 +97,42 @@ class Board(Bitmap):
             if not self.can_place(shape):
                 return False
         return True
+
+    def rate_potential(self, max_depth=5, offset_result=True):
+        """If :param offset_result: is False, return the number of steps
+        into the future it is guaranteed to be possible to take, up to a
+        maximum of :param max_depth: plys, such that a result of 0 means
+        the board has no valid moves, and a result of :param max_depth:
+        means we stopped before being blocked.  If :param offset_result:
+        is True, subtract :param max_depth: from the result, such that a
+        value of 0 means we stopped before being blocked, and negative
+        values indicate we were blocked before reaching :param max_depth:.
+        """
+        board = copy.copy(self)
+        board._new_choices = lambda: None
+        board._remaining_plys = max_depth
+        result = board._rate_potential_stage1()
+        raise NotImplementedError(f"result = {result}")
+
+    def _begin_ply(self):
+        self._remaining_plys -= 1
+        if self._remaining_plys < 1:
+            raise StopIteration
+
+    def _rate_potential_stage1(self):
+        """Walk through choices visible to the user."""
+        if not any(self.choices):
+            return self._rate_potential_stage2()
+        self._begin_ply()
+        for move in self.valid_moves:
+            print(self._remaining_plys, move)
+            board = copy.deepcopy(self)
+            board.one_move(*move)
+            result = board._rate_potential_stage1()
+            raise NotImplementedError(f"result = {result}")
+        raise NotImplementedError
+
+    def _rate_potential_stage2(self):
+        """Walk through all future choices."""
+        self._begin_ply()
+        raise NotImplementedError
