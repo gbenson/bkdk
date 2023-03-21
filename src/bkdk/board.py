@@ -111,8 +111,10 @@ class Board(Bitmap):
         board = copy.copy(self)
         board._new_choices = lambda: None
         board._remaining_plys = max_depth
-        result = board._rate_potential_stage1()
-        raise NotImplementedError(f"result = {result}")
+        try:
+            return board._rate_potential_stage1()
+        except StopIteration:
+            return 0
 
     def _begin_ply(self):
         self._remaining_plys -= 1
@@ -135,4 +137,24 @@ class Board(Bitmap):
     def _rate_potential_stage2(self):
         """Walk through all future choices."""
         self._begin_ply()
-        raise NotImplementedError
+        self.choices = list(ALL_SHAPES)
+        valid_moves = list(self.valid_moves)
+        print(f"{len(valid_moves)}/2656 valid moves")
+        # The maximum, on blank board, is
+        # 47 choices => 2,656 valid moves
+        placable_choices = {choice for choice, rowcol in valid_moves}
+        num_unplacables = len(self.choices) - len(placable_choices)
+        if num_unplacables > 0:
+            print(f"{num_unplacables} unplacable shapes found")
+            return num_unplacables
+
+        # for move in valid_moves:
+        #    print(self._remaining_plys, move)
+        #    board = copy.deepcopy(self)
+        #    board.one_move(*move)
+        #    board._choices = []  # XX unnecessary?
+        #    result = board._rate_potential_stage2()
+        #    raise NotImplementedError(f"result = {result}")
+
+        # Every shape can be placed
+        raise StopIteration  # XXX??

@@ -4,6 +4,14 @@ from bkdk.board import Board
 from bkdk.shapes import ALL_SHAPES
 
 
+def test_empty_board_quality():
+    """Quality of empty board with no choices is XXX"""
+    board = Board()
+    board.choices = []
+    print(board)
+    assert board.rate_potential() == 0
+
+
 @pytest.fixture
 def very_full_board():
     random.seed(23)
@@ -80,4 +88,4 @@ def test_post_poor_move_quality(very_full_board):
     board.one_move(*VFB_POOR_MOVE)
     print(board)
     board.choices = []
-    assert board.rate_potential() == 0
+    assert board.rate_potential() == 32
