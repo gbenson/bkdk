@@ -62,12 +62,12 @@ def test_vfb_move_scores(very_full_board, move, expect_score):
     assert board.score == expect_score
 
 
-@pytest.mark.skip
 def test_pre_move_quality(very_full_board):
     """Quality before any moves is XXX"""
     board = very_full_board
     print(board)
     assert board.rate_potential() == 0
+    # XXX all shapes placable after moves
 
 
 def test_post_good_move_quality(very_full_board):
@@ -77,6 +77,7 @@ def test_post_good_move_quality(very_full_board):
     print(board)
     board.choices = []
     assert board.rate_potential() == 0
+    # XXX all shapes placable
 
 
 def test_post_poor_move_quality(very_full_board):
