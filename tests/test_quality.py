@@ -70,14 +70,11 @@ def test_pre_move_quality(very_full_board):
     assert board.rate_potential() == 0
 
 
-@pytest.mark.skip
 def test_post_good_move_quality(very_full_board):
     """Quality after good move is XXX"""
     board = very_full_board
-    print(board.choices)
     board.one_move(*VFB_GOOD_MOVE)
     print(board)
-    print(board.choices)
     board.choices = []
     assert board.rate_potential() == 0
 
