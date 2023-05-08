@@ -99,7 +99,12 @@ def test_size(input_code, expected_size):
     assert Shape(code=input_code).size == expected_size
 
 
-def test_uids():
+def test_uids_unique():
     """Each shape has a unique integer uid."""
     shapes = {shape.uid for shape in ALL_SHAPES}
     assert len(shapes) == len(ALL_SHAPES)
+
+
+def test_uids_nonzero():
+    """No shape has a uid of zero."""
+    assert not any(shape.uid == 0 for shape in ALL_SHAPES)
