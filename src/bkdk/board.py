@@ -12,6 +12,10 @@ class Board(Bitmap):
     def _new_choices(self):
         self.choices = [random_shape(self._rng) for _ in range(3)]
 
+    @property
+    def _board_uid(self):
+        return self.toint()
+
     def resolve(self):
         """Resolve any solved sections, returning the number of
         sections cleared."""

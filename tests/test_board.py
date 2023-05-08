@@ -342,3 +342,16 @@ def test_valid_moves_one_shape_placecd():
     assert (0, (5, 4)) not in valid_moves
     assert (1, (5, 4)) not in valid_moves
     assert (2, (5, 4)) in valid_moves
+
+
+def test_blank_board_uid():
+    """A blank board's board_uid is zero."""
+    assert Board()._board_uid == 0
+
+
+def test_nonblank_board_uid():
+    """A non-blank board's board_uid is as expected."""
+    random.seed(23)
+    board = Board()
+    board.one_move(1, (6, 4))
+    assert board._board_uid == 0x780000
