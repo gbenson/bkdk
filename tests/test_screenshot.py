@@ -37,3 +37,20 @@ def test_screenshot_board_cell_setness(test_screenshot, index, expect_set):
     """Board cells can be set or not"""
     cells = list(test_screenshot.board.cells)
     assert cells[index].is_set == expect_set
+
+
+def test_screenshot_board_tolist(test_screenshot):
+    """Board cells can be set or not"""
+    assert test_screenshot.board.tolist() == [
+        [0, 1, 0,  0, 0, 1,  1, 1, 0],
+        [1, 1, 0,  1, 1, 1,  0, 0, 1],
+        [0, 1, 0,  1, 1, 1,  1, 1, 1],
+
+        [0, 0, 0,  0, 0, 0,  0, 0, 0],
+        [0, 1, 0,  0, 0, 0,  1, 0, 0],
+        [0, 1, 0,  1, 0, 0,  0, 1, 1],
+
+        [0, 1, 0,  1, 1, 1,  0, 0, 0],
+        [1, 0, 0,  1, 1, 1,  0, 0, 0],
+        [1, 0, 0,  0, 0, 0,  0, 0, 0],
+    ]

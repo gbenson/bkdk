@@ -1,3 +1,4 @@
+import numpy as np
 from PIL import Image, ImageOps
 
 
@@ -35,6 +36,10 @@ class BoardDecoder:
             for col in range(9):
                 xcen = ((col * 2 + 1) * self.cellsize) // 2 + left
                 yield CellDecoder(self.img, (xcen, ycen), self.cellsize)
+
+    def tolist(self):
+        return np.asarray([cell.is_set for cell in self.cells],
+                          dtype=np.uint8).reshape((9, 9)).tolist()
 
 
 class CellDecoder:
