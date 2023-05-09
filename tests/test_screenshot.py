@@ -20,3 +20,9 @@ def test_screenshots_subclass_PIL_Image(test_screenshot):
     """Screenshots subclass PIL.Image."""
     assert isinstance(test_screenshot, Image.Image)
     assert test_screenshot.size == (720, 1520)
+
+
+def test_screenshot_board_cells(test_screenshot):
+    """Screenshots have 81 board cells"""
+    cells = list(test_screenshot.board.cells)
+    assert len(cells) == 81
