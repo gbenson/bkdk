@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 def Screenshot(*args, **kwargs):
@@ -48,3 +48,13 @@ class CellDecoder:
         x, y = self.cen_xy
         r = self.cellsize // 3
         return (x - r, y - r, x + r, y + r)
+
+    @property
+    def is_set(self):
+        img = self.img.crop(self.rect)
+        img = ImageOps.posterize(img, 1)
+        num_pixels = img.width * img.height
+        colors = img.getcolors(num_pixels)
+        max_count, color = max(colors)
+        assert max_count * 100 > num_pixels * 99
+        return 0 in color

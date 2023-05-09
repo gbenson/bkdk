@@ -26,3 +26,14 @@ def test_screenshot_board_cells(test_screenshot):
     """Screenshots have 81 board cells"""
     cells = list(test_screenshot.board.cells)
     assert len(cells) == 81
+
+
+@pytest.mark.parametrize(
+    "index,expect_set",
+    ((0, False),
+     (1, True),
+     ))
+def test_screenshot_board_cell_setness(test_screenshot, index, expect_set):
+    """Board cells can be set or not"""
+    cells = list(test_screenshot.board.cells)
+    assert cells[index].is_set == expect_set
