@@ -1,5 +1,6 @@
 import numpy as np
 from PIL import Image, ImageOps
+from .bitmap import Bitmap
 
 
 def Screenshot(*args, **kwargs):
@@ -91,6 +92,10 @@ class ChoiceDecoder:
         if self.num_rows < 5:
             result = np.vstack((result, np.zeros(5, dtype=result.dtype)))
         return result.tolist()
+
+    @property
+    def uid(self):
+        return Bitmap._bits_to_int(sum(self.tolist(), []))
 
 
 class CellDecoder:
