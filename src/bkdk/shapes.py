@@ -47,6 +47,10 @@ class Shape(Bitmap):
         items.extend([pad_with] * (to_length - len(items)))
         return tuple(items)
 
+    @classmethod
+    def from_uid(cls, uid):
+        return cls.BY_UID[uid]
+
 
 class ShapeSetBuilder:
     def __init__(self):
@@ -117,6 +121,8 @@ class ShapeSetBuilder:
 
 
 ALL_SHAPES = tuple(ShapeSetBuilder().finalize())
+
+Shape.BY_UID = dict((shape.uid, shape) for shape in ALL_SHAPES)
 
 
 def random_shape(_random=None):

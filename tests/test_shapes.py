@@ -108,3 +108,9 @@ def test_uids_unique():
 def test_uids_nonzero():
     """No shape has a uid of zero."""
     assert not any(shape.uid == 0 for shape in ALL_SHAPES)
+
+
+def test_from_uid():
+    """Shapes may be referenced by uid."""
+    for shape in ALL_SHAPES:
+        assert Shape.from_uid(shape.uid) is shape
